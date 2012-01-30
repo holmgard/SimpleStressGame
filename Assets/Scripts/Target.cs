@@ -24,6 +24,10 @@ public class Target : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
+		
+	}
+	
+	void FixedUpdate(){
 		MoveSpiral();
 	}
 	
@@ -35,13 +39,15 @@ public class Target : MonoBehaviour {
 	}
 	
 	void MoveSpiral(){
-		CheckBoundaries();
-		transform.Rotate(Vector3.up,degreesToRotate,Space.Self);
-		transform.Translate(transform.forward*Time.deltaTime*movementSpeed);	
-		
+		//CheckBoundaries();
+		//transform.Rotate(Vector3.up,degreesToRotate,Space.Self);
+		//transform.Translate(transform.forward*Time.deltaTime*movementSpeed);
+		Random.seed = (int)Time.time;
+		rigidbody.AddRelativeTorque(0,(int)Random.Range(0,1)/10,0,ForceMode.Force);
+		rigidbody.AddRelativeForce(Vector3.forward*10,ForceMode.Force);
 	}
 	
-	void CheckBoundaries()
+	/*void CheckBoundaries()
 	{
 		float dist = (transform.position - Camera.main.transform.position).z;
 		float leftBorder = Camera.main.ViewportToWorldPoint(new Vector3(0,0,dist)).x;
@@ -59,5 +65,5 @@ public class Target : MonoBehaviour {
 	{
 		Random.seed = (int) Time.time;
 		return Random.Range(-120.0F,120.0F);
-	}
+	}*/
 }
