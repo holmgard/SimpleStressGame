@@ -34,3 +34,11 @@ Library/guidmapper
 Library/InspectorExpandedItems.asset
 Library/MonoManager.asset
 Library/ScriptMapper
+Assembly-CSharp-vs.csproj
+Assembly-CSharp.csproj
+Assembly-CSharp.pidb
+Library/expandedItems
+SimpleStressGame-csharp.sln
+SimpleStressGame.sln
+SimpleStressGame.userprefs
+Library/AssetVersioning.db
