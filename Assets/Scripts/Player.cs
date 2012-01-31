@@ -3,14 +3,13 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 	
-	GameLogic gl;
-	
-	public int points = 0;
+	public GameLogic gl;
 	public float mouseLag = 0;
 	
 	// Use this for initialization
 	void Start () {
-		gl = GameLogic.Instance();
+		gl = (GameLogic) FindObjectOfType(typeof(GameLogic));
+		Debug.Log("GameLogic: " + gl.ToString());
 	}
 	
 	// Update is called once per frame
@@ -41,7 +40,7 @@ public class Player : MonoBehaviour {
 		if(target != null)
 		{
 			target.Catch();
-			points++;
+			gl.AddPoints();
 		}
 	}
 }

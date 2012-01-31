@@ -9,6 +9,7 @@ public class GameLogic : MonoBehaviour {
 	
 	private static GameLogic instance;
 	public GameState gameState;
+	public int points = 0;
 	
 	public Collider backGroundPlane;
 	public float yForCharacters = 1;
@@ -24,7 +25,6 @@ public class GameLogic : MonoBehaviour {
 		{
 			GameLogic.instance = this;
 		}
-		
 		gameState = GameState.playing;
 	}
 	
@@ -41,5 +41,10 @@ public class GameLogic : MonoBehaviour {
 		default:
 			break;
 		}
+	}
+	
+	public void AddPoints()
+	{
+		points++;
 	}
 }
