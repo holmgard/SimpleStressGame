@@ -14,7 +14,8 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		FollowMouse();
+		if(gl.gameState == GameState.playing)
+			FollowMouse();
 	}
 	
 	void FollowMouse()
@@ -36,11 +37,20 @@ public class Player : MonoBehaviour {
 	void OnCollisionEnter(Collision collision)
 	{
 		Target target;
+		Threat threat;
+		
 		target = collision.gameObject.GetComponent<Target>();
 		if(target != null)
 		{
 			target.Catch();
 			gl.AddPoints();
+			gl.SpawnThreat();
+		}
+		
+		threat = collision.gameObject.GetComponent<Threat>();
+		if(threat != null)
+		{
+			gl.GameOver();
 		}
 	}
 }

@@ -8,7 +8,7 @@ public class GameGUI : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		gl = GameLogic.Instance();
+		gl = (GameLogic) FindObjectOfType(typeof(GameLogic));
 	}
 	
 	// Update is called once per frame
@@ -21,6 +21,7 @@ public class GameGUI : MonoBehaviour {
 		switch(gl.gameState)
 		{
 		case GameState.menu:
+			Screen.showCursor = true;
 			MenuGUI();
 			break;
 		case GameState.playing:
@@ -28,6 +29,7 @@ public class GameGUI : MonoBehaviour {
 			PlayingGUI();
 		break;
 		case GameState.gameover:
+			Screen.showCursor = true;
 			GameOverGUI();
 		break;
 		default:
@@ -35,20 +37,31 @@ public class GameGUI : MonoBehaviour {
 		}
 	}
 	
-	public int menuWidth;
-	public int menuHeight;
+	public int menuWidth = 200;
+	public int menuHeight = 200;
 	void MenuGUI()
 	{
-		
+		GUI.Box(new Rect(0,0,Screen.width,Screen.height),"");
+		GUI.Box(new Rect(Screen.width/2-menuWidth/2,Screen.height/2-menuHeight/2,menuWidth,menuHeight),"Target Tracker");
+		if(GUI.Button(new Rect(Screen.width/2-menuWidth/2+50,Screen.height/2-menuHeight/2+50,100,100),"Start Game"))
+		{
+			gl.StartNewGame();
+		}
 	}
 	
 	void PlayingGUI()
 	{
-		
+		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
 	}
 	
 	void GameOverGUI()
 	{
-		
+		GUI.Box(new Rect(0,0,Screen.width,Screen.height),"");
+		GUI.Box(new Rect(Screen.width/2-menuWidth/2,Screen.height/2-menuHeight/2,menuWidth,menuHeight),"GAME OVER :P");
+		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
+		if(GUI.Button(new Rect(Screen.width/2-menuWidth/2+50,Screen.height/2-menuHeight/2+50,100,100),"Restart Game"))
+		{
+			gl.StartNewGame();
+		}
 	}
 }
