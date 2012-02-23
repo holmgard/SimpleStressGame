@@ -2,7 +2,11 @@ using UnityEngine;
 using System.Collections;
 
 public enum GameState{
-		menu,playing,gameover
+	menu,
+	initialSurvey,
+	preferenceSurvey,
+	playing,
+	gameover
 }
 
 public class GameLogic : MonoBehaviour {
@@ -15,8 +19,11 @@ public class GameLogic : MonoBehaviour {
 	public float yForCharacters = 1;
 	public Vector3[] startPoints;
 	
+	public Player player;
 	public GameObject threatPrefab;
 	public GameObject targetPrefab;
+	
+	public float safetyDistanceSpawning = 4.0F;
 	
 	public static GameLogic Instance()
 	{
@@ -61,8 +68,18 @@ public class GameLogic : MonoBehaviour {
 		this.SetGameState(GameState.gameover);
 	}
 	
+	Vector3 spawnPointThreats;
 	public void SpawnThreat()
 	{
+		Mathf.Clamp(safetyDistanceSpawning,0.0F,4.0F);
+		
+		spawnPointThreats = startPoints[Random.Range(0,3)];
+		while(Vector3.Distance(player.gameObject.transform.position,spawnPointThreats) < safetyDistanceSpawning)
+		{
+			spawnPointThreats = startPoints[Random.Range(0,3)];
+		}
+		
+		Debug.Log(Vector3.Distance(player.gameObject.transform.position,spawnPointThreats).ToString());
 		Instantiate(threatPrefab,startPoints[Random.Range(0,3)],Quaternion.identity);
 	}
 	
@@ -73,6 +90,8 @@ public class GameLogic : MonoBehaviour {
 			GameLogic.instance = this;
 		}
 		gameState = GameState.menu;
+		
+		player = (Player)FindObjectOfType(typeof(Player));
 		
 		startPoints = new Vector3[4];
 		
@@ -95,6 +114,9 @@ public class GameLogic : MonoBehaviour {
 		default:
 			break;
 		}
+		
+		//for(int i = 0; i<startPoints.Length; i++)
+		//	Debug.Log("SP: " + i + " " + (Vector3.Distance(player.gameObject.transform.position,spawnPoint) < safetyDistanceSpawning).ToString() + " " + Vector3.Distance(player.gameObject.transform.position,spawnPoint).ToString());
 	}
 	
 	public void AddPoints()

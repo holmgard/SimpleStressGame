@@ -39,6 +39,7 @@ public class GameGUI : MonoBehaviour {
 	
 	public int menuWidth = 200;
 	public int menuHeight = 200;
+	
 	void MenuGUI()
 	{
 		GUI.Box(new Rect(0,0,Screen.width,Screen.height),"");
@@ -52,6 +53,14 @@ public class GameGUI : MonoBehaviour {
 	void PlayingGUI()
 	{
 		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
+	}
+	
+	void InitialSurveyGUI(){
+		
+	}
+	
+	void PreferenceSurveyGUI(){
+		
 	}
 	
 	void GameOverGUI()

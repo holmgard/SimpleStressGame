@@ -42,7 +42,7 @@ public class Player : MonoBehaviour {
 		target = collision.gameObject.GetComponent<Target>();
 		if(target != null)
 		{
-			target.Catch();
+			target.Catch(this);
 			gl.AddPoints();
 			gl.SpawnThreat();
 		}

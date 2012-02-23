@@ -1,3 +1,7 @@
+/* This whole file grabbed from the home page of Unity3d:
+ * http://unity3d.com/support/resources/example-projects/procedural-examples.html
+ * */
+
 using System.Collections;
 using System;
 using UnityEngine;

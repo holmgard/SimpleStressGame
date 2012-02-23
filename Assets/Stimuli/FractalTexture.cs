@@ -6,8 +6,6 @@ public class FractalTexture : MonoBehaviour {
 	 * http://unity3d.com/support/resources/example-projects/procedural-examples.html
 	 * */
 	
-	
-	
 	bool gray = true;
 	int width = 128;
 	int  height = 128;
