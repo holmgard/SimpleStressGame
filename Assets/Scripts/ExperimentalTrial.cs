@@ -6,9 +6,15 @@ public class ExperimentalTrial : MonoBehaviour {
 	
 	public Texture2D[] visualStimuli;
 	public AudioClip[] auditiveStimuli;
+	public Material[] playerColors;
+	
 	public List<Stimulus> stimuli;
 	
-	public List<ExpSet> sets;
+	public List<ExpSet> comparisonSets;
+	public List<ExpSet> randomSets;
+	public List<ExpSet> totalSets;
+	
+	public ExpSet mostRecentSet;
 	
 	public int lengthOfSets;
 	
@@ -17,14 +23,19 @@ public class ExperimentalTrial : MonoBehaviour {
 	{
 		Debug.Log("Start");
 		SetupStimuli();
+		SetupComparisonSets();
 		SetupRandomSets();
+		totalSets = new List<ExpSet>();
+		totalSets.AddRange(comparisonSets);
+		totalSets.AddRange(randomSets);
+		Debug.Log("Generated a total of " + totalSets.Count.ToString() + " sets");
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		if(sets != null)
-			lengthOfSets = sets.Count;
+		if(randomSets != null)
+			lengthOfSets = totalSets.Count;
 	}
 	
 	void SetupStimuli()
@@ -44,22 +55,31 @@ public class ExperimentalTrial : MonoBehaviour {
 	void SetupComparisonSets()
 	{
 		Debug.Log("SetupComparisonSets");
+		comparisonSets = new List<ExpSet>();
+		
+		int playerColor = Random.Range(0,2);
+		
+		foreach(Stimulus curStim in stimuli)
+		{
+			comparisonSets.Add(new ExpSet(new ExpSession(curStim,false,playerColors[playerColor]),new ExpSession(curStim,true,playerColors[playerColor])));
+			playerColor = Mathf.Abs(playerColor-1);
+		}
 	}
 	
 	void SetupRandomSets()
 	{
 		Debug.Log("SetupRandomSets");
 		//Prepare list for sets
-		sets = new List<ExpSet>();
-		Debug.Log(sets.Count);
+		randomSets = new List<ExpSet>();
+		Debug.Log(randomSets.Count);
 		Debug.Log(stimuli.Count);
 		Debug.Log(stimuli.Count*( stimuli.Count - 1 ));
 		
 		int iteration = 0;
-		while( sets.Count < ( stimuli.Count*( stimuli.Count - 1 ) ) * 2 )
+		while( randomSets.Count < ( stimuli.Count*( stimuli.Count - 1 ) ) * 2 )
 		{
 			Debug.Log("Loop");
-			Debug.Log("Sets:" + sets.Count.ToString());
+			Debug.Log("Sets:" + randomSets.Count.ToString());
 			
 			iteration++;
 			Debug.Log("Iterations: " + iteration);
@@ -75,10 +95,13 @@ public class ExperimentalTrial : MonoBehaviour {
 				continue;
 			}
 			
+			int playerColorA = Random.Range(0,playerColors.Length);
+			int playerColorB = Mathf.Abs(playerColorA-1);
+			
 			//Make an experimental set and check that it is not a clone of one already in the list of sets
-			ExpSet candidate = new ExpSet(new ExpSession(stimCand_a,System.Convert.ToBoolean(Random.Range(0,2))),new ExpSession(stimCand_b,System.Convert.ToBoolean(Random.Range(0,2))));
+			ExpSet candidate = new ExpSet(new ExpSession(stimCand_a,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorA]),new ExpSession(stimCand_b,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorB]));
 			bool candidateIsDouble = false;
-			foreach(ExpSet curSet in sets){
+			foreach(ExpSet curSet in randomSets){
 				if(curSet.Equals(candidate))
 				{
 					Debug.Log("Candidate already in sets, trying again");
@@ -89,7 +112,7 @@ public class ExperimentalTrial : MonoBehaviour {
 				continue;
 			
 			//It it qualifies, add the new set of sessions to the list of sets
-			sets.Add(candidate);
+			randomSets.Add(candidate);
 		}
 	}
 }
@@ -140,16 +163,17 @@ public class ExpSet{
 public class ExpSession
 {
 	public float sessionTimeSeconds = 30F;
-	public int points = 0;
-	
+	public int points = 0;	
 	public bool noise;
+	public Material playerColor;
 	
 	public Stimulus stimulus;
 	
-	public ExpSession(Stimulus stim, bool noi)
+	public ExpSession(Stimulus stim, bool noi, Material playCol)
 	{
 		stimulus = stim;
 		noise = noi;
+		playerColor = playCol;
 	}
 }
 

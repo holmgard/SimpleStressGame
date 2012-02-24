@@ -42,12 +42,20 @@ public class GameGUI : MonoBehaviour {
 	
 	void MenuGUI()
 	{
-		GUI.Box(new Rect(0,0,Screen.width,Screen.height),"");
-		GUI.Box(new Rect(Screen.width/2-menuWidth/2,Screen.height/2-menuHeight/2,menuWidth,menuHeight),"Target Tracker");
-		if(GUI.Button(new Rect(Screen.width/2-menuWidth/2+50,Screen.height/2-menuHeight/2+50,100,100),"Start Game"))
-		{
-			gl.StartNewGame();
-		}
+		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+			GUILayout.BeginVertical();
+				GUILayout.Label("Empatica state:");
+				GUILayout.Box(gl.empConnection.empState.ToString());
+				if(GUILayout.Button("Connect Empatica"))
+				{
+					gl.empConnection.ConnectEmpatica();
+				}
+				if(GUILayout.Button("Start the experiment"))
+				{
+					gl.SetGameState(GameState.initialSurvey);
+				}
+			GUILayout.EndVertical();
+		GUILayout.EndArea();
 	}
 	
 	void PlayingGUI()
@@ -70,7 +78,7 @@ public class GameGUI : MonoBehaviour {
 		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
 		if(GUI.Button(new Rect(Screen.width/2-menuWidth/2+50,Screen.height/2-menuHeight/2+50,100,100),"Restart Game"))
 		{
-			gl.StartNewGame();
+			gl.SetGameState(GameState.initialSurvey);
 		}
 	}
 }

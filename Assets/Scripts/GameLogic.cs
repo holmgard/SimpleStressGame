@@ -11,6 +11,10 @@ public enum GameState{
 
 public class GameLogic : MonoBehaviour {
 	
+	public ExperimentalTrial expTrial;
+	public SurveyLogic surveyLogic;
+	public EmpaticaConnection empConnection;
+	
 	private static GameLogic instance;
 	public GameState gameState;
 	public int points = 0;
@@ -92,6 +96,9 @@ public class GameLogic : MonoBehaviour {
 		gameState = GameState.menu;
 		
 		player = (Player)FindObjectOfType(typeof(Player));
+		expTrial = (ExperimentalTrial)FindObjectOfType(typeof(ExperimentalTrial));
+		surveyLogic = (SurveyLogic)FindObjectOfType(typeof(SurveyLogic));
+		empConnection = (EmpaticaConnection)FindObjectOfType(typeof(EmpaticaConnection));
 		
 		startPoints = new Vector3[4];
 		
@@ -102,21 +109,23 @@ public class GameLogic : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+	{
 		switch(gameState)
 		{
 		case GameState.menu:
 			break;
+		case GameState.initialSurvey:
+			break;
 		case GameState.playing:
+			break;
+		case GameState.preferenceSurvey:
 			break;
 		case GameState.gameover:
 			break;
 		default:
 			break;
-		}
-		
-		//for(int i = 0; i<startPoints.Length; i++)
-		//	Debug.Log("SP: " + i + " " + (Vector3.Distance(player.gameObject.transform.position,spawnPoint) < safetyDistanceSpawning).ToString() + " " + Vector3.Distance(player.gameObject.transform.position,spawnPoint).ToString());
+		}		
 	}
 	
 	public void AddPoints()
