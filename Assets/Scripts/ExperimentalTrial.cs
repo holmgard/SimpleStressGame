@@ -28,6 +28,7 @@ public class ExperimentalTrial : MonoBehaviour {
 		totalSets = new List<ExpSet>();
 		totalSets.AddRange(comparisonSets);
 		totalSets.AddRange(randomSets);
+		mostRecentSet = totalSets[0];
 		Debug.Log("Generated a total of " + totalSets.Count.ToString() + " sets");
 	}
 	
@@ -36,6 +37,13 @@ public class ExperimentalTrial : MonoBehaviour {
 	{
 		if(randomSets != null)
 			lengthOfSets = totalSets.Count;
+	}
+	
+	public ExpSet GetNextExpSet()
+	{
+		ExpSet temp = mostRecentSet;
+		mostRecentSet = totalSets[(totalSets.IndexOf(mostRecentSet)+1)];
+		return temp;
 	}
 	
 	void SetupStimuli()

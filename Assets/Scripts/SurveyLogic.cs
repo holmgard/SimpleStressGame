@@ -66,17 +66,23 @@ public class SurveyLogic : MonoBehaviour {
 		GUILayout.EndArea();
 	}
 	
+	int forcedChoiceChallengeSelected = 0;
+	string[] forcedChoiceChallengeOptions = {"The first game was most challenging","The second game was most challeging","They were equally challenging","None of them were challenging"};
+	
+	int forcedChoiceStressSelected = 0;
+	string[] forcedChoiceStressOptions = {"The first game was most stressful","The second game was most stressful","They were equally stressfull","None of them were stressful"};	
+	
 	void ForcedChoiceFourAltSurvey()
 	{
 		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
 			GUILayout.BeginVertical();
 				GUILayout.Label("Which of the two games you just played did you find the most challenging?\nPlease choose from the options below:");
-				
+				forcedChoiceChallengeSelected = GUILayout.SelectionGrid(forcedChoiceChallengeSelected,forcedChoiceChallengeOptions,1);
 			GUILayout.EndVertical();
 			GUILayout.BeginVertical();
-				GUILayout.Label("Which of the two games you just played did you find the most stressful?\nPlease choose from the options below:");
+				GUILayout.Label("Which of the two games you just played did you find the most stressful?\nPlease choose from the options below. Click an option to choose it.");
+				forcedChoiceStressSelected = GUILayout.SelectionGrid(forcedChoiceStressSelected,forcedChoiceStressOptions,1);
 			GUILayout.EndVertical();
-			
 			if(GUILayout.Button("Go to next game"))
 			{
 				gl.SetGameState(GameState.playing);

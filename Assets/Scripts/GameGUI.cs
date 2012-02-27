@@ -52,6 +52,7 @@ public class GameGUI : MonoBehaviour {
 				}
 				if(GUILayout.Button("Start the experiment"))
 				{
+					gl.empConnection.MarkEvent("StarExperiment");
 					gl.SetGameState(GameState.initialSurvey);
 				}
 			GUILayout.EndVertical();
@@ -61,14 +62,6 @@ public class GameGUI : MonoBehaviour {
 	void PlayingGUI()
 	{
 		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
-	}
-	
-	void InitialSurveyGUI(){
-		
-	}
-	
-	void PreferenceSurveyGUI(){
-		
 	}
 	
 	void GameOverGUI()
