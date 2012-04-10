@@ -5,6 +5,7 @@ public class Player : MonoBehaviour {
 	
 	public GameLogic gl;
 	public float mouseLag = 0;
+	public AudioClip getPointsSound;
 	
 	// Use this for initialization
 	void Start () {
@@ -52,7 +53,8 @@ public class Player : MonoBehaviour {
 		if(threat != null)
 		{
 			gl.empConnection.MarkEvent("HitThreat");
-			gl.GameOver();
+			
+			gl.ThreatCollision();
 		}
 	}
 }

@@ -37,10 +37,21 @@ public class GameLogic : MonoBehaviour {
 	public List<GameObject> currentThreats;
 	
 	public Stimulus currentStimulus;
+	public GameObject stimulusDeliveryPlane;
+	
+	private float gameStartTime;
+	public float gameLengthInSeconds = 30.0f;
+	public float stimulusDeliveryPointRelative = 0.5f;
+	private float stimulusDeliveryTime;
+	public bool stimulusDelivered = false;
+	public float stimulusExposureTimeInSeconds = 1.0f;
+	public bool stimulusRemoved = false;
 	
 	public float safetyDistanceSpawning = 4.0F;
 	
 	public List<GameLogEntry> gameLog;
+	
+	public AudioSource threatCollisionSource;
 	
 	public static GameLogic Instance()
 	{
@@ -54,6 +65,15 @@ public class GameLogic : MonoBehaviour {
 	
 	public void StartNewGame()
 	{
+		gameStartTime = Time.time;
+		stimulusDelivered = false;
+		stimulusRemoved = false;
+		
+		if(threatCollisionSource.isPlaying)
+		{
+			threatCollisionSource.Stop();
+		}
+		
 		points = 0;
 		int pos1 = Random.Range(0,3);
 		int pos2 = Random.Range(0,3);
@@ -69,6 +89,15 @@ public class GameLogic : MonoBehaviour {
 			this.SetGameState(GameState.playingSesA);
 		else if (gameState == GameState.waiting)
 			this.SetGameState(GameState.playingSesB);
+	}
+	
+	public void ThreatCollision()
+	{
+		threatCollisionSource.PlayOneShot(threatCollisionSource.clip);
+		if(points > 0)
+		{
+			points--;
+		}
 	}
 	
 	public void GameOver()
@@ -121,6 +150,11 @@ public class GameLogic : MonoBehaviour {
 		Debug.Log("DataPath: " + Application.dataPath);
 		//System.Diagnostics.Process.Start(Application.dataPath + "/AffectiveLnk_bridge");
 		
+		stimulusDeliveryPlane.active = false;
+		//stimulusDeliveryPlane.transform.position = new Vector3(stimulusDeliveryPlane.transform.position.x, 1000, stimulusDeliveryPlane.transform.position.z);
+		
+		threatCollisionSource = Camera.mainCamera.GetComponent<AudioSource>();
+		
 		gameLog = new List<GameLogEntry>();
 		
 		if(GameLogic.instance == null)
@@ -164,6 +198,16 @@ public class GameLogic : MonoBehaviour {
 			break;
 		}
 		
+		if( gameState == GameState.playingSesA || gameState == GameState.playingSesB )
+		{
+			CheckForStimulusDelivery();
+		}
+		
+		if( ( gameState == GameState.playingSesA || gameState == GameState.playingSesB ) && Time.time - gameStartTime > gameLengthInSeconds)
+		{
+			GameOver();
+		}
+		
 		Vector3[] threatPositions = new Vector3[currentThreats.Count];
 		for(int i = 0; i < currentThreats.Count; i++)
 		{
@@ -176,8 +220,47 @@ public class GameLogic : MonoBehaviour {
 			Debug.Log("GameLog length: " + gameLog.Count.ToString());*/
 	}
 	
+	public void CheckForStimulusDelivery()
+	{
+		//Debug.Log("Time to stimulus delivery: " + ( (Time.time - gameStartTime - gameLengthInSeconds*stimulusDeliveryPointRelative)*-1 ).ToString() );
+		//Debug.Log("Stimulus type: " + currentStimulus.stimType.ToString());
+		if(stimulusDelivered && stimulusRemoved)
+		{
+			return;
+		} else if ( stimulusDelivered && !stimulusRemoved ) {
+			if( Time.time - stimulusDeliveryTime > stimulusExposureTimeInSeconds )
+			{
+				Debug.Log("Removing visual stimulus");
+				stimulusDeliveryPlane.active = false;
+				stimulusRemoved = true;	
+			}
+		} else if ( ( Time.time - gameStartTime ) > ( gameLengthInSeconds*stimulusDeliveryPointRelative )  ) 
+		{
+			stimulusDeliveryTime = Time.time;
+				
+			if(currentStimulus.stimType == Stimulus.StimulusTypes.auditive)
+			{
+				//TODO - put mark in data set
+				Debug.Log("Deploying auditive stimulus");
+				threatCollisionSource.PlayOneShot(currentStimulus.audio);
+				stimulusRemoved = true;
+			}
+			if(currentStimulus.stimType == Stimulus.StimulusTypes.visual)
+			{
+				//TODO - put mark in data set
+				Debug.Log("Deploying visual stimulus");
+				stimulusDeliveryPlane.renderer.material.mainTexture = currentStimulus.image;
+				stimulusDeliveryPlane.active = true;
+				//Change background
+			}
+			
+			stimulusDelivered = true;
+		}
+	}
+	
 	public void AddPoints()
 	{
+		threatCollisionSource.PlayOneShot(player.getPointsSound);
 		points++;
 	}
 }

@@ -32,6 +32,37 @@ public class ExperimentalTrial : MonoBehaviour {
 		mostRecentSet = totalSets[0];
 		mostRecentSession = totalSets[0].sessionA;
 		Debug.Log("Generated a total of " + totalSets.Count.ToString() + " sets");
+		Debug.Log(GenerateSetReport());
+	}
+	
+	string GenerateSetReport()
+	{
+		string result = "";
+		result += "Report of applied experimental sets for this experimental trial\n";
+		result += "----------\n";
+		foreach(ExpSet expSet in totalSets)
+		{
+			result += "Set number: " + totalSets.IndexOf(expSet) + "\n";
+			result += "Stimulus A type: " + expSet.sessionA.stimulus.stimType.ToString() + "\n";
+			if(expSet.sessionA.stimulus.stimType == Stimulus.StimulusTypes.auditive)
+			{
+				result += "Stimulus A name: " + expSet.sessionA.stimulus.audio.name + "\n";
+			}
+			if(expSet.sessionA.stimulus.stimType == Stimulus.StimulusTypes.visual)
+			{
+				result += "Stimulus A name: " + expSet.sessionA.stimulus.image.name + "\n";
+			}
+			if(expSet.sessionB.stimulus.stimType == Stimulus.StimulusTypes.auditive)
+			{
+				result += "Stimulus A name: " + expSet.sessionB.stimulus.audio.name + "\n";
+			}
+			if(expSet.sessionB.stimulus.stimType == Stimulus.StimulusTypes.visual)
+			{
+				result += "Stimulus A name: " + expSet.sessionB.stimulus.image.name + "\n";
+			}
+			result += "-----\n";
+		}
+		return result;
 	}
 	
 	// Update is called once per frame
@@ -45,7 +76,7 @@ public class ExperimentalTrial : MonoBehaviour {
 	{
 		ExpSet temp = mostRecentSet;
 		mostRecentSet = totalSets[(totalSets.IndexOf(mostRecentSet)+1)];
-		return temp;
+		return mostRecentSet;
 	}
 	
 	public ExpSession GetNextExpSession()
@@ -141,6 +172,8 @@ public class ExperimentalTrial : MonoBehaviour {
 			
 			//It it qualifies, add the new set of sessions to the list of sets
 			randomSets.Add(candidate);
+			Debug.Log("Ses A: " + candidate.sessionA.stimulus.stimType.ToString() );
+			Debug.Log("Ses B: " + candidate.sessionB.stimulus.stimType.ToString() );
 		}
 	}
 }
