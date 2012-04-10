@@ -5,6 +5,7 @@ public class SurveyLogic : MonoBehaviour {
 	
 	GameLogic gl;
 	SurveyData surveyData;
+	public Texture2D tutorialImage;
 	
 	// Use this for initialization
 	void Start ()
@@ -36,8 +37,11 @@ public class SurveyLogic : MonoBehaviour {
 	void InitialSurvey()
 	{
 		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
-			GUILayout.Label("Thank you for participating in this experimental game.\nThe rules of the game are explained in the image below. If you have any questions, please ask you experimental instructor.");
-			GUILayout.Box("Tutorial shot here");
+			GUILayout.Label("Thank you for participating in this experimental game.\nThe rules of the game are explained in the image below. If you have any questions, please ask your experimental instructor.");
+			if(tutorialImage != null)
+			{
+				GUILayout.Box(tutorialImage);
+			}
 			GUILayout.Label("Also, before we begin, we would like to ask you a few questions about yourself.\nPlease fill out the following questionnaire and press \"Start\" to start the experiment and game.");
 			GUILayout.BeginHorizontal();
 				GUILayout.Label("Participant number:");
@@ -83,9 +87,10 @@ public class SurveyLogic : MonoBehaviour {
 				GUILayout.Label("Which of the two games you just played did you find the most stressful?\nPlease choose from the options below. Click an option to choose it.");
 				forcedChoiceStressSelected = GUILayout.SelectionGrid(forcedChoiceStressSelected,forcedChoiceStressOptions,1);
 			GUILayout.EndVertical();
+			GUILayout.Space(50);
 			if(GUILayout.Button("Go to next game"))
 			{
-				gl.SetGameState(GameState.playing);
+				gl.StartNewGame();
 			}
 		GUILayout.EndArea();
 	}

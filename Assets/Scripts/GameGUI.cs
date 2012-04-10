@@ -24,16 +24,27 @@ public class GameGUI : MonoBehaviour {
 			Screen.showCursor = true;
 			MenuGUI();
 			break;
-		case GameState.playing:
+		case GameState.playingSesA:
 			Screen.showCursor = false;
 			PlayingGUI();
+		break;
+		case GameState.waiting:
+			Screen.showCursor = true;
+			WaitingGUI();
+		break;
+		case GameState.playingSesB:
+			Screen.showCursor = false;
+			PlayingGUI();
+		break;
+		case GameState.preferenceSurvey:
+			Screen.showCursor = true;
 		break;
 		case GameState.gameover:
 			Screen.showCursor = true;
 			GameOverGUI();
 		break;
 		default:
-			break;
+		break;
 		}
 	}
 	
@@ -64,14 +75,36 @@ public class GameGUI : MonoBehaviour {
 		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
 	}
 	
+	void WaitingGUI()
+	{
+		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+			GUILayout.BeginVertical();
+				if(GUILayout.Button("Proceed to next round"))
+				{
+					gl.empConnection.MarkEvent("SessionStart");
+					gl.StartNewGame();
+				}
+			GUILayout.EndVertical();
+		GUILayout.EndArea();
+	}
+	
 	void GameOverGUI()
 	{
-		GUI.Box(new Rect(0,0,Screen.width,Screen.height),"");
-		GUI.Box(new Rect(Screen.width/2-menuWidth/2,Screen.height/2-menuHeight/2,menuWidth,menuHeight),"GAME OVER :P");
-		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
-		if(GUI.Button(new Rect(Screen.width/2-menuWidth/2+50,Screen.height/2-menuHeight/2+50,100,100),"Restart Game"))
-		{
-			gl.SetGameState(GameState.initialSurvey);
-		}
+		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+			GUILayout.BeginVertical();
+				GUILayout.BeginHorizontal();	
+					GUILayout.Label("Empatica state:");
+					GUILayout.Box(gl.empConnection.empState.ToString());
+				GUILayout.EndHorizontal();
+				if(GUILayout.Button("Stop reading"))
+				{
+					gl.empConnection.StopEmpatica();
+				}
+				if(GUILayout.Button("SaveData"))
+				{
+					gl.empConnection.StartSave();
+				}
+			GUILayout.EndVertical();
+		GUILayout.EndArea();
 	}
 }

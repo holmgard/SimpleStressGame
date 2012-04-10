@@ -31,7 +31,7 @@ public class GenericMover : MonoBehaviour {
 	}
 	
 	void FixedUpdate(){
-		if(gl.gameState == GameState.playing)
+		if(gl.gameState == GameState.playingSesA || gl.gameState == GameState.playingSesB)
 			MoveSpiral();
 	}
 	

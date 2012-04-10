@@ -6,7 +6,7 @@ public class Target : GenericMover {
 	public float safetyDistanceSpawning = 4.0F;
 	
 	public void Catch(Player player)
-	{
+	{	
 		Vector3[] spawnPoints = gl.startPoints;
 		Vector3 spawnPoint;
 		

@@ -15,6 +15,7 @@ public class ExperimentalTrial : MonoBehaviour {
 	public List<ExpSet> totalSets;
 	
 	public ExpSet mostRecentSet;
+	public ExpSession mostRecentSession;
 	
 	public int lengthOfSets;
 	
@@ -29,6 +30,7 @@ public class ExperimentalTrial : MonoBehaviour {
 		totalSets.AddRange(comparisonSets);
 		totalSets.AddRange(randomSets);
 		mostRecentSet = totalSets[0];
+		mostRecentSession = totalSets[0].sessionA;
 		Debug.Log("Generated a total of " + totalSets.Count.ToString() + " sets");
 	}
 	
@@ -44,6 +46,18 @@ public class ExperimentalTrial : MonoBehaviour {
 		ExpSet temp = mostRecentSet;
 		mostRecentSet = totalSets[(totalSets.IndexOf(mostRecentSet)+1)];
 		return temp;
+	}
+	
+	public ExpSession GetNextExpSession()
+	{
+		if(mostRecentSession == mostRecentSet.sessionB)
+		{
+			mostRecentSession = GetNextExpSet().sessionA;
+		} else {
+			mostRecentSession = mostRecentSet.sessionB;
+		}
+		return mostRecentSession;
+		
 	}
 	
 	void SetupStimuli()
@@ -69,8 +83,11 @@ public class ExperimentalTrial : MonoBehaviour {
 		
 		foreach(Stimulus curStim in stimuli)
 		{
-			comparisonSets.Add(new ExpSet(new ExpSession(curStim,false,playerColors[playerColor]),new ExpSession(curStim,true,playerColors[playerColor])));
-			playerColor = Mathf.Abs(playerColor-1);
+			int PCA = playerColor;
+			int PCB = Mathf.Abs(playerColor-1);
+			comparisonSets.Add(new ExpSet(new ExpSession(curStim,false,playerColors[PCA]),new ExpSession(curStim,true,playerColors[PCB])));
+			Debug.Log("Comp. Set Player Color: " + playerColor);
+			playerColor = Random.Range(0,2);
 		}
 	}
 	
@@ -104,12 +121,15 @@ public class ExperimentalTrial : MonoBehaviour {
 			}
 			
 			int playerColorA = Random.Range(0,playerColors.Length);
+			Debug.Log("ColorA: " + playerColorA);
 			int playerColorB = Mathf.Abs(playerColorA-1);
+			Debug.Log("ColorB: " + playerColorB);
 			
 			//Make an experimental set and check that it is not a clone of one already in the list of sets
 			ExpSet candidate = new ExpSet(new ExpSession(stimCand_a,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorA]),new ExpSession(stimCand_b,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorB]));
 			bool candidateIsDouble = false;
-			foreach(ExpSet curSet in randomSets){
+			foreach(ExpSet curSet in randomSets)
+			{
 				if(curSet.Equals(candidate))
 				{
 					Debug.Log("Candidate already in sets, trying again");
@@ -126,8 +146,8 @@ public class ExperimentalTrial : MonoBehaviour {
 }
 
 public class ExpSet{
-	ExpSession sessionA;
-	ExpSession sessionB;
+	public ExpSession sessionA;
+	public ExpSession sessionB;
 	
 	public ExpSet(ExpSession sesA, ExpSession sesB)
 	{

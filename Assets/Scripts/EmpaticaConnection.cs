@@ -354,7 +354,7 @@ public class EmpaticaConnection : MonoBehaviour {
 	public string OutputFileName="Empatica_data.dat";
 	public bool isSaving = false;
 	public Thread saveThread;
-	private void startSave()
+	public void StartSave()
 	{
 		saveThread = new Thread(new ThreadStart(saveDataToFile));
 		saveThread.IsBackground = true;
@@ -396,7 +396,7 @@ public class EmpaticaConnection : MonoBehaviour {
 				StopEmpatica();
 			}
 			if(GUI.Button(new Rect(310,10,100,100),"Save Data")){
-				startSave();
+				StartSave();
 			}
 			if(isSaving)
 			{

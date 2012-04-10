@@ -14,7 +14,7 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(gl.gameState == GameState.playing)
+		if(gl.gameState == GameState.playingSesA || gl.gameState == GameState.playingSesB)
 			FollowMouse();
 	}
 	
@@ -42,6 +42,7 @@ public class Player : MonoBehaviour {
 		target = collision.gameObject.GetComponent<Target>();
 		if(target != null)
 		{
+			gl.empConnection.MarkEvent("CaughtTarget");
 			target.Catch(this);
 			gl.AddPoints();
 			gl.SpawnThreat();
@@ -50,6 +51,7 @@ public class Player : MonoBehaviour {
 		threat = collision.gameObject.GetComponent<Threat>();
 		if(threat != null)
 		{
+			gl.empConnection.MarkEvent("HitThreat");
 			gl.GameOver();
 		}
 	}
