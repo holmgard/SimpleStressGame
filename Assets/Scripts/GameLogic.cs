@@ -21,7 +21,9 @@ public class GameLogic : MonoBehaviour {
 	
 	private static GameLogic instance;
 	public GameState gameState;
-	public int points = 0;
+	public int targetsCaugth = 0;
+	public int threatsHit = 0;
+	public int maxNumberOfThreats = 6;
 	
 	public int gamesPlayed = 0;
 	
@@ -41,6 +43,7 @@ public class GameLogic : MonoBehaviour {
 	
 	private float gameStartTime;
 	public float gameLengthInSeconds = 30.0f;
+	public int numberOfThreatsOnScene = 0;
 	public float stimulusDeliveryPointRelative = 0.5f;
 	private float stimulusDeliveryTime;
 	public bool stimulusDelivered = false;
@@ -74,7 +77,7 @@ public class GameLogic : MonoBehaviour {
 			threatCollisionSource.Stop();
 		}
 		
-		points = 0;
+		targetsCaugth = 0;
 		int pos1 = Random.Range(0,3);
 		int pos2 = Random.Range(0,3);
 		while(pos1 == pos2)
@@ -83,6 +86,7 @@ public class GameLogic : MonoBehaviour {
 		}
 		currentTarget = (GameObject)Instantiate(targetPrefab,startPoints[pos1],Quaternion.identity);
 		currentThreats.Add((GameObject)Instantiate(threatPrefab,startPoints[pos2],Quaternion.identity));
+		numberOfThreatsOnScene = currentThreats.Count;
 		
 		gameConfig.ConfigureSession(expTrial.GetNextExpSession());
 		if(gameState == GameState.initialSurvey || gameState == GameState.preferenceSurvey)
@@ -94,10 +98,7 @@ public class GameLogic : MonoBehaviour {
 	public void ThreatCollision()
 	{
 		threatCollisionSource.PlayOneShot(threatCollisionSource.clip);
-		if(points > 0)
-		{
-			points--;
-		}
+		threatsHit++;
 	}
 	
 	public void GameOver()
@@ -121,9 +122,14 @@ public class GameLogic : MonoBehaviour {
 		if(gamesPlayed >= expTrial.totalSets.Count)
 			this.SetGameState(GameState.gameover);
 		if(gameState == GameState.playingSesA)
+		{
 			this.SetGameState(GameState.waiting);
+		}
 		else if (gameState == GameState.playingSesB)
+		{
 			this.SetGameState(GameState.preferenceSurvey);
+			
+		}
 		
 		currentTarget = null;
 		currentThreats.Clear();
@@ -141,7 +147,8 @@ public class GameLogic : MonoBehaviour {
 		}
 		
 		Debug.Log(Vector3.Distance(player.gameObject.transform.position,spawnPointThreats).ToString());
-		Instantiate(threatPrefab,startPoints[Random.Range(0,3)],Quaternion.identity);
+		currentThreats.Add((GameObject) Instantiate(threatPrefab,startPoints[Random.Range(0,3)],Quaternion.identity) as GameObject);
+		numberOfThreatsOnScene = currentThreats.Count;
 	}
 	
 	// Use this for initialization
@@ -215,7 +222,7 @@ public class GameLogic : MonoBehaviour {
 		}
 		
 		if(gameState == GameState.playingSesA || gameState == GameState.playingSesB)
-			gameLog.Add(new GameLogEntry(System.DateTime.Now,gamesPlayed,gameState,threatPositions,currentTarget.transform.position,player.transform.position,points));
+			gameLog.Add(new GameLogEntry(System.DateTime.Now,gamesPlayed,gameState,threatPositions,currentTarget.transform.position,player.transform.position,targetsCaugth));
 		/*if(gameLog != null)
 			Debug.Log("GameLog length: " + gameLog.Count.ToString());*/
 	}
@@ -261,6 +268,6 @@ public class GameLogic : MonoBehaviour {
 	public void AddPoints()
 	{
 		threatCollisionSource.PlayOneShot(player.getPointsSound);
-		points++;
+		targetsCaugth++;
 	}
 }

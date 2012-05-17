@@ -224,6 +224,8 @@ public class ExpSet{
 public class ExpSession
 {
 	public float sessionTimeSeconds = 30F;
+	public int targetsCaught = 0;
+	public int threathsHit = 0;
 	public int points = 0;	
 	public bool noise;
 	public Material playerColor;

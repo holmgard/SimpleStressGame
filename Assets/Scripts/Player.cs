@@ -46,6 +46,7 @@ public class Player : MonoBehaviour {
 			gl.empConnection.MarkEvent("CaughtTarget");
 			target.Catch(this);
 			gl.AddPoints();
+			//if(
 			gl.SpawnThreat();
 		}
 		

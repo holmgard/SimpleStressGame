@@ -72,7 +72,7 @@ public class GameGUI : MonoBehaviour {
 	
 	void PlayingGUI()
 	{
-		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.points.ToString());
+		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.targetsCaugth.ToString());
 	}
 	
 	void WaitingGUI()
