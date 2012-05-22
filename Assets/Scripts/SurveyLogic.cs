@@ -1,6 +1,8 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 public class SurveyLogic : MonoBehaviour {
 	
@@ -9,6 +11,7 @@ public class SurveyLogic : MonoBehaviour {
 	public List<PreferenceSurveyData> preferenceSurveyData;
 	PreferenceSurveyData currentPreferenceSurveyData;
 	public Texture2D tutorialImage;
+	public GUISkin surveySkin;
 	
 	// Use this for initialization
 	void Start ()
@@ -28,9 +31,11 @@ public class SurveyLogic : MonoBehaviour {
 		switch(gl.gameState)
 		{
 		case GameState.initialSurvey:
+			GUI.skin = surveySkin;
 			InitialSurvey();
 			break;
 		case GameState.preferenceSurvey:
+			GUI.skin = surveySkin;
 			ForcedChoiceFourAltSurvey();
 			break;
 		default:
@@ -38,9 +43,14 @@ public class SurveyLogic : MonoBehaviour {
 		}
 	}
 	
+	
+	public float menuWidth = 0.6F;
+	public float menuHeight = 0.4F;
+	
 	void InitialSurvey()
 	{
-		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+		//GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+		GUILayout.BeginArea(new Rect(Screen.width*(1-menuWidth)/2,Screen.height*(1-menuHeight)/2,Screen.width*menuWidth,Screen.height*menuHeight),surveySkin.box);
 			GUILayout.Label("Thank you for participating in this experimental game.\nThe rules of the game are explained in the image below. If you have any questions, please ask your experimental instructor.");
 			if(tutorialImage != null)
 			{
@@ -62,7 +72,7 @@ public class SurveyLogic : MonoBehaviour {
 				GUILayout.EndHorizontal();
 				GUILayout.BeginHorizontal();
 					GUILayout.Label("How often do you play computer games?");
-					surveyData.gameExperienceSelected = GUILayout.SelectionGrid(surveyData.gameExperienceSelected,surveyData.gameExperienceOptions,4);
+					surveyData.gameExperienceSelected = GUILayout.SelectionGrid(surveyData.gameExperienceSelected,surveyData.gameExperienceOptions,2);
 				GUILayout.EndHorizontal();
 				GUILayout.BeginHorizontal();
 					GUILayout.Label("Are you, as far as you know, colorblind?");
@@ -113,6 +123,39 @@ public class SurveyLogic : MonoBehaviour {
 	{
 		currentPreferenceSurveyData.MarkEnd();
 	}
+	
+	Thread saveThread;
+	
+	public void SaveData()
+	{
+		saveThread = new Thread(new ThreadStart(ThreadSaveData));
+		saveThread.IsBackground = true;
+		saveThread.Start();
+	}
+	
+	public void ThreadSaveData() //TODO: Maybe this could be rewritten to use LINQ and be really cool?
+	{
+		string fileName = "";
+		fileName += DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + "_" + DateTime.Now.Second.ToString() + "InitialSurvey.dat";
+		
+		System.IO.File.WriteAllText(fileName, surveyData.ToString());
+		
+		fileName = "";
+		fileName += DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + "_" + DateTime.Now.Second.ToString() + "PreferenceSurveys.dat";
+		
+		string preferenceSurveyString = "";
+		foreach(PreferenceSurveyData prefData in preferenceSurveyData)
+		{
+			preferenceSurveyString += prefData.ToString();
+			preferenceSurveyString += "\n";
+		}
+		
+		System.IO.File.WriteAllText(fileName,preferenceSurveyString);
+		
+		print ("Survey saving done");
+		
+		saveThread.Abort();
+	}
 
 }
 
@@ -161,7 +204,7 @@ public class PreferenceSurveyData
 		setNumber = expTrial.totalSets.IndexOf(exSet);
 	}
 	
-	public void SetMostStressfulGame(int gameNum)
+	public void SetMostStressfullGame(int gameNum)
 	{
 		mostStressFullGame = gameNum;
 		numberOfSelectionsMade++;

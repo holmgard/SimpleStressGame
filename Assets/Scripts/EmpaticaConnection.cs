@@ -94,10 +94,10 @@ public class EmpaticaConnection : MonoBehaviour {
 	public float CalculateBaseLine()
 	{
 		float sum = 0;
-		EmpaticaSample sample;
+		OldEmpaticaSample sample;
 		for(var i = 200; i < 840; i++)
 		{
-			sample = (EmpaticaSample)dataStorage[i];
+			sample = (OldEmpaticaSample)dataStorage[i];
 			sum += sample.SkinConductance;
 		}
 		Debug.Log("Calculated baseline");
@@ -278,13 +278,13 @@ public class EmpaticaConnection : MonoBehaviour {
 					sv[k] = 0;
 				}
 			}
-			EmpaticaSample sample;
+			OldEmpaticaSample sample;
 			if(markWaiting)
 			{
-				sample = new EmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],waitingMark);
+				sample = new OldEmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],waitingMark);
 				markWaiting = false;
 			} else {
-				sample = new EmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],"");
+				sample = new OldEmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],"");
 			}
 			dataChunk.Add(sample);
 			//Debug.Log("i " + i.ToString() + " " + sample.ToString());
@@ -335,13 +335,13 @@ public class EmpaticaConnection : MonoBehaviour {
 					}
 				}
 				
-				EmpaticaSample sample;
+				OldEmpaticaSample sample;
 				if(markWaiting)
 				{
-					sample = new EmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],waitingMark);
+					sample = new OldEmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],waitingMark);
 					markWaiting = false;
 				} else {
-					sample = new EmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],"");
+					sample = new OldEmpaticaSample(DateTime.Now,sv[0],sv[1],sv[2],sv[3],sv[4],sv[5],sv[6],sv[7],sv[8],"");
 				}
 				dataChunk.Add(sample);
 				}
@@ -367,7 +367,7 @@ public class EmpaticaConnection : MonoBehaviour {
 		string outString = "";
 		
 		Debug.Log("Building output string...");
-		foreach(EmpaticaSample row in dataStorage)
+		foreach(OldEmpaticaSample row in dataStorage)
 		{
 			outString += row.ToString();
 			outString += "\n";
@@ -409,7 +409,7 @@ public class EmpaticaConnection : MonoBehaviour {
 
 #region Sample structure
 //For storing data from the device
-public class EmpaticaSample : System.Object
+public class OldEmpaticaSample : System.Object
 {
 	public DateTime SampleTime;
 	public float SkinConductance = 0;
@@ -423,7 +423,7 @@ public class EmpaticaSample : System.Object
 	public float Unknown7 = 0;
 	public string Mark = "";
 	
-	public EmpaticaSample(DateTime st, float sc, float bvp, float u1, float u2,float u3, float u4,float u5,float u6,float u7, string mark)
+	public OldEmpaticaSample(DateTime st, float sc, float bvp, float u1, float u2,float u3, float u4,float u5,float u6,float u7, string mark)
 	{
 		SampleTime = st;
 		SkinConductance = sc;

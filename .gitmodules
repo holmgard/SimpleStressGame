@@ -1,0 +1,6 @@
+[submodule "lib"]
+	path = lib
+	url = gitolite@80.70.3.130:empatica
+[submodule "Assets/externals"]
+	path = Assets/externals
+	url = gitolite@80.70.3.130:empatica

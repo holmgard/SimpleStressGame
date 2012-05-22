@@ -52,7 +52,8 @@ public class GameLogic : MonoBehaviour {
 	
 	public float safetyDistanceSpawning = 4.0F;
 	
-	public List<GameLogEntry> gameLog;
+	public GameLogger gameLogger;
+	public bool didManuallySave = false;
 	
 	public AudioSource threatCollisionSource;
 	
@@ -127,8 +128,8 @@ public class GameLogic : MonoBehaviour {
 		}
 		else if (gameState == GameState.playingSesB)
 		{
+			surveyLogic.StartPreferenceSurvey();
 			this.SetGameState(GameState.preferenceSurvey);
-			
 		}
 		
 		currentTarget = null;
@@ -146,7 +147,7 @@ public class GameLogic : MonoBehaviour {
 			spawnPointThreats = startPoints[Random.Range(0,3)];
 		}
 		
-		Debug.Log(Vector3.Distance(player.gameObject.transform.position,spawnPointThreats).ToString());
+		//Debug.Log(Vector3.Distance(player.gameObject.transform.position,spawnPointThreats).ToString());
 		currentThreats.Add((GameObject) Instantiate(threatPrefab,startPoints[Random.Range(0,3)],Quaternion.identity) as GameObject);
 		numberOfThreatsOnScene = currentThreats.Count;
 	}
@@ -162,13 +163,16 @@ public class GameLogic : MonoBehaviour {
 		
 		threatCollisionSource = Camera.mainCamera.GetComponent<AudioSource>();
 		
-		gameLog = new List<GameLogEntry>();
-		
 		if(GameLogic.instance == null)
 		{
 			GameLogic.instance = this;
 		}
 		gameState = GameState.menu;
+		
+		gameLogger = gameObject.AddComponent<GameLogger>();
+		
+		Debug.Log("Toggling GameLogger");
+		gameLogger.ToggleLogging();
 		
 		player = (Player)FindObjectOfType(typeof(Player));
 		expTrial = (ExperimentalTrial)FindObjectOfType(typeof(ExperimentalTrial));
@@ -195,9 +199,9 @@ public class GameLogic : MonoBehaviour {
 			break;
 		case GameState.playingSesA:
 			break;
-		case GameState.preferenceSurvey:
-			break;
 		case GameState.playingSesB:
+			break;
+		case GameState.preferenceSurvey:
 			break;
 		case GameState.gameover:
 			break;
@@ -221,8 +225,8 @@ public class GameLogic : MonoBehaviour {
 			threatPositions[i] = currentThreats[i].transform.position;
 		}
 		
-		if(gameState == GameState.playingSesA || gameState == GameState.playingSesB)
-			gameLog.Add(new GameLogEntry(System.DateTime.Now,gamesPlayed,gameState,threatPositions,currentTarget.transform.position,player.transform.position,targetsCaugth));
+		/*if(gameState == GameState.playingSesA || gameState == GameState.playingSesB)
+			gameLog.Add(new GameLogEntry(System.DateTime.Now,gamesPlayed,gameState,threatPositions,currentTarget.transform.position,player.transform.position,targetsCaugth));*/
 		/*if(gameLog != null)
 			Debug.Log("GameLog length: " + gameLog.Count.ToString());*/
 	}
@@ -269,5 +273,15 @@ public class GameLogic : MonoBehaviour {
 	{
 		threatCollisionSource.PlayOneShot(player.getPointsSound);
 		targetsCaugth++;
+	}
+	
+	public void OnApplicationQuit()
+	{
+		/*if(!didManuallySave)
+		{
+			gameLogger.SaveData();
+			surveyLogic.SaveData();
+			empConnection.StartSave();
+		}*/
 	}
 }

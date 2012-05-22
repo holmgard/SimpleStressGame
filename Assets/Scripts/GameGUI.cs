@@ -7,7 +7,8 @@ public class GameGUI : MonoBehaviour {
 	public GUISkin skin;
 	
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 		gl = (GameLogic) FindObjectOfType(typeof(GameLogic));
 	}
 	
@@ -48,12 +49,13 @@ public class GameGUI : MonoBehaviour {
 		}
 	}
 	
-	public int menuWidth = 200;
-	public int menuHeight = 200;
+	public float menuWidth = 0.8F;
+	public float menuHeight = 0.8F;
 	
 	void MenuGUI()
 	{
-		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+		GUI.skin = skin;
+		GUILayout.BeginArea(new Rect(Screen.width*(1-menuWidth)*2,Screen.height*(1-menuHeight)*2,Screen.width*menuWidth,Screen.height*menuHeight));
 			GUILayout.BeginVertical();
 				GUILayout.Label("Empatica state:");
 				GUILayout.Box(gl.empConnection.empState.ToString());
@@ -102,7 +104,10 @@ public class GameGUI : MonoBehaviour {
 				}
 				if(GUILayout.Button("SaveData"))
 				{
+					gl.gameLogger.SaveData();
+					gl.surveyLogic.SaveData();
 					gl.empConnection.StartSave();
+					gl.didManuallySave = true;
 				}
 			GUILayout.EndVertical();
 		GUILayout.EndArea();
