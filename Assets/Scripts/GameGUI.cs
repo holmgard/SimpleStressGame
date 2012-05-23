@@ -59,14 +59,56 @@ public class GameGUI : MonoBehaviour {
 			GUILayout.BeginVertical();
 				GUILayout.Label("Empatica state:");
 				GUILayout.Box(gl.empConnection.empState.ToString());
-				if(GUILayout.Button("Connect Empatica"))
+				switch(gl.empConnection.empState)
 				{
-					gl.empConnection.ConnectEmpatica();
-				}
-				if(GUILayout.Button("Start the experiment"))
-				{
-					gl.empConnection.MarkEvent("StarExperiment");
-					gl.SetGameState(GameState.initialSurvey);
+					case EmpaticaConnection.EmpaticaState.fresh:
+						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_greyish")))
+						{
+							gl.empConnection.ConnectEmpatica();
+						}
+						GUILayout.Space(20f);
+						if(GUILayout.Button("Start the experiment",skin.GetStyle("button_greyish")))
+						{
+							gl.empConnection.MarkEvent("StartExperiment");
+							gl.SetGameState(GameState.initialSurvey);
+						}
+						break;
+					case EmpaticaConnection.EmpaticaState.opening:
+						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_yellow")))
+						{
+							//gl.empConnection.ConnectEmpatica();
+						}
+						GUILayout.Space(20f);
+						if(GUILayout.Button("Start the experiment",skin.GetStyle("button_yellow")))
+						{
+							gl.empConnection.MarkEvent("StartExperiment");
+							gl.SetGameState(GameState.initialSurvey);
+						}
+						break;
+					case EmpaticaConnection.EmpaticaState.receiving:
+						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_green")))
+						{
+							//gl.empConnection.ConnectEmpatica();
+						}
+						if(GUILayout.Button("Start the experiment",skin.GetStyle("button_green")))
+						{
+							gl.empConnection.MarkEvent("StartExperiment");
+							gl.SetGameState(GameState.initialSurvey);
+						}
+						break;
+					case EmpaticaConnection.EmpaticaState.error:
+						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_red")))
+						{
+							//gl.empConnection.ConnectEmpatica();
+						}
+						if(GUILayout.Button("Start the experiment",skin.GetStyle("button_red")))
+						{
+							gl.empConnection.MarkEvent("StartExperiment");
+							gl.SetGameState(GameState.initialSurvey);
+						}
+						break;
+					default:
+						break;
 				}
 			GUILayout.EndVertical();
 		GUILayout.EndArea();

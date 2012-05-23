@@ -1,0 +1,9 @@
+Proceed to next game too wide
+PreferenceSurvey too wide
+Save screen too wide
+
+Color switching is buggy, doesn't always work
+
+Saving is slightly broken
+
+Replace EmpaticaConnection with EmpaticaE2

@@ -45,13 +45,14 @@ public class SurveyLogic : MonoBehaviour {
 	
 	
 	public float menuWidth = 0.6F;
-	public float menuHeight = 0.4F;
+	public float menuHeight = 0.85F;
+	public float surveyItemVerticalSpacing = 5.0f;
 	
 	void InitialSurvey()
 	{
 		//GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
 		GUILayout.BeginArea(new Rect(Screen.width*(1-menuWidth)/2,Screen.height*(1-menuHeight)/2,Screen.width*menuWidth,Screen.height*menuHeight),surveySkin.box);
-			GUILayout.Label("Thank you for participating in this experimental game.\nThe rules of the game are explained in the image below. If you have any questions, please ask your experimental instructor.");
+			GUILayout.Label("Thank you for participating in this experimental game.\nThe game is about catching the green target and avoiding the red enemies (see below). If you have any questions, please ask your experimenter.");
 			if(tutorialImage != null)
 			{
 				GUILayout.Box(tutorialImage);
@@ -62,26 +63,35 @@ public class SurveyLogic : MonoBehaviour {
 					GUILayout.Label("Participant number:");
 					surveyData.participantNumber = GUILayout.TextField(surveyData.participantNumber);
 				GUILayout.EndHorizontal();
+				GUILayout.Space(surveyItemVerticalSpacing);
 				GUILayout.BeginHorizontal();
 					GUILayout.Label("What is your gender?");
 					surveyData.genderSelected = GUILayout.SelectionGrid(surveyData.genderSelected,surveyData.genderOptions,2);
 				GUILayout.EndHorizontal();
+				GUILayout.Space(surveyItemVerticalSpacing);
 				GUILayout.BeginHorizontal();
 					GUILayout.Label("What is your age?");
 					surveyData.age = GUILayout.TextField(surveyData.age);
 				GUILayout.EndHorizontal();
+				GUILayout.Space(surveyItemVerticalSpacing);
 				GUILayout.BeginHorizontal();
 					GUILayout.Label("How often do you play computer games?");
 					surveyData.gameExperienceSelected = GUILayout.SelectionGrid(surveyData.gameExperienceSelected,surveyData.gameExperienceOptions,2);
 				GUILayout.EndHorizontal();
+				GUILayout.Space(surveyItemVerticalSpacing);
 				GUILayout.BeginHorizontal();
 					GUILayout.Label("Are you, as far as you know, colorblind?");
 					surveyData.colorBlindInt = GUILayout.SelectionGrid(surveyData.colorBlindInt,surveyData.colorBlindOptions,2);
 				GUILayout.EndHorizontal();
-				if(GUILayout.Button("Start"))
-				{
-					gl.StartNewGame();
-				}
+				GUILayout.Space(surveyItemVerticalSpacing);
+				GUILayout.BeginHorizontal();
+					GUILayout.FlexibleSpace();
+					if(GUILayout.Button("Start", surveySkin.GetStyle("button_green"),GUILayout.Height(30f)))
+					{
+						gl.StartNewGame();
+					}
+					GUILayout.FlexibleSpace();
+				GUILayout.EndHorizontal();
 			GUILayout.EndVertical();
 		GUILayout.EndArea();
 	}
