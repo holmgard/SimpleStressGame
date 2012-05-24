@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -40,9 +41,11 @@ public class EmpaticaE2 : MonoBehaviour {
 	private byte[] receivingBuffer;
 	public int bufferSize = 1024;
 	
-	private Thread saveThread;
+	private Thread saveSamplesThread;
+	private Thread saveEventsThread;
 	
 	public volatile ArrayList dataStorage;
+	public ArrayList events;
 	
 	private byte[] data;
 	
@@ -51,6 +54,7 @@ public class EmpaticaE2 : MonoBehaviour {
 		Application.runInBackground = true;
 		encoding = new System.Text.ASCIIEncoding();
 		dataStorage = new ArrayList();
+		events = new ArrayList();
 	}
 	
 	public void ConnectEmpatica()
@@ -353,11 +357,43 @@ public class EmpaticaE2 : MonoBehaviour {
 	
 	public void SaveData()
 	{
-		saveThread = new Thread(new ThreadStart(ThreadSaveData));
-		saveThread.IsBackground = true;
-		saveThread.Start();
+		saveSamplesThread = new Thread(new ThreadStart(ThreadSaveData));
+		saveSamplesThread.IsBackground = true;
+		saveSamplesThread.Start();
+		
+		saveEventsThread = new Thread(new ThreadStart(ThreadSaveEvents));
+		saveEventsThread.IsBackground = true;
+		saveEventsThread.Start();
 	}
 	
+			
+	public void ThreadSaveEvents()
+	{
+		print ("Starting events save...");
+		
+		string fileName = "";
+				fileName += DateTime.Now.Day.ToString();
+				fileName += DateTime.Now.Month.ToString();
+				fileName += DateTime.Now.Year.ToString();
+				fileName += "_";
+				fileName += DateTime.Now.Hour.ToString();
+				fileName += DateTime.Now.Minute.ToString();
+				fileName += DateTime.Now.Second.ToString();
+				fileName += "_Events";
+				fileName += ".dat";
+				
+				string eventString = "";
+				foreach(EmpaticaEvent eEvent in events)
+				{
+					eventString += eEvent.ToString();
+					eventString += "\n";
+				}
+				System.IO.File.WriteAllText(fileName,eventString);
+		
+		print ("Events save done...");
+		saveEventsThread.Abort();
+	}
+		
 	public void ThreadSaveData() //TODO: Maybe this could be rewritten to use LINQ and be really cool?
 	{
 		print ("Starting save...");
@@ -440,24 +476,47 @@ public class EmpaticaE2 : MonoBehaviour {
 			}
 		}
 		print ("Saving done");
-		saveThread.Abort();
+		saveSamplesThread.Abort();
 	}
 	
 	public void SetPort(int port)
 	{
 		serverPort = port;
 	}
+	
+	
+	public void MarkEvent(string e)
+	{
+		events.Add(new EmpaticaEvent(DateTime.Now, e));
+	}
 		
 	public void OnApplicationQuit()
 	{
 		if(receiveThread != null)
 			receiveThread.Abort();
-		if(saveThread != null)
-			saveThread.Abort();
+		if(saveSamplesThread != null)
+			saveSamplesThread.Abort();
 		if(stream != null)
 			stream.Close();
 		if(client != null)
 			client.Close();
+	}
+}
+
+public class EmpaticaEvent
+{
+	DateTime time;
+	string eventDescription;
+	
+	public EmpaticaEvent(DateTime t, string e)
+	{
+		time = t;
+		eventDescription = e;
+	}
+	
+	public string ToString()
+	{
+		return string.Format("{0:yyy-mm-dd_hh:mm:ss.fff}\t{1}",time,eventDescription);
 	}
 }
 

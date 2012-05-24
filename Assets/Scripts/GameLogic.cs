@@ -16,7 +16,7 @@ public class GameLogic : MonoBehaviour {
 	
 	public ExperimentalTrial expTrial;
 	public SurveyLogic surveyLogic;
-	public EmpaticaConnection empConnection;
+	public EmpaticaE2 empConnection;
 	public GameConfigurator gameConfig;
 	
 	private static GameLogic instance;
@@ -177,7 +177,7 @@ public class GameLogic : MonoBehaviour {
 		player = (Player)FindObjectOfType(typeof(Player));
 		expTrial = (ExperimentalTrial)FindObjectOfType(typeof(ExperimentalTrial));
 		surveyLogic = (SurveyLogic)FindObjectOfType(typeof(SurveyLogic));
-		empConnection = (EmpaticaConnection)FindObjectOfType(typeof(EmpaticaConnection));
+		empConnection = (EmpaticaE2)FindObjectOfType(typeof(EmpaticaE2));
 		gameConfig = (GameConfigurator)FindObjectOfType(typeof(GameConfigurator));
 		
 		startPoints = new Vector3[4];

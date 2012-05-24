@@ -101,22 +101,18 @@ public class SurveyLogic : MonoBehaviour {
 	int forcedChoiceChallengeSelected = 0;
 	string[] forcedChoiceChallengeOptions = {"The first game was most challenging","The second game was most challeging","They were equally challenging","None of them were challenging"};
 	
-	int forcedChoiceStressSelected = 0;
 	string[] forcedChoiceStressOptions = {"The first game was most stressful","The second game was most stressful","They were equally stressful","None of them were stressful"};	
+	int forcedChoiceStressSelected = 0;
 	
 	public float prefMenuWidth = 0.3155F;
 	public float prefMenuHeight = 0.3F;
 	//public float surveyItemVerticalSpacing = 5.0f;
 	
-	void ForcedChoiceFourAltSurvey()
+	/*void ForcedChoiceFourAltSurvey()
 	{	
 		GUI.skin = preferenceSkin;
 		GUILayout.BeginArea(new Rect(Screen.width*(1-prefMenuWidth)/2,Screen.height*(1-prefMenuHeight)/2,Screen.width*prefMenuWidth,Screen.height*prefMenuHeight),surveySkin.box);
 		//GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
-			/*GUILayout.BeginVertical();
-				GUILayout.Label("Which of the two games you just played did you find the most challenging?\nPlease choose from the options below:");
-				forcedChoiceChallengeSelected = GUILayout.SelectionGrid(forcedChoiceChallengeSelected,forcedChoiceChallengeOptions,1);
-			GUILayout.EndVertical();*/
 			GUILayout.BeginHorizontal();
 				GUILayout.FlexibleSpace();
 				GUILayout.BeginVertical();
@@ -132,7 +128,106 @@ public class SurveyLogic : MonoBehaviour {
 				gl.StartNewGame();
 			}
 		GUILayout.EndArea();
+	}*/
+	
+	bool first = false;
+	bool second = false;
+	bool equal = false;
+	bool none = false;
+	
+	void ForcedChoiceFourAltSurvey()
+	{	
+		GUI.skin = preferenceSkin;
+		GUILayout.BeginArea(new Rect(Screen.width*(1-prefMenuWidth)/2,Screen.height*(1-prefMenuHeight)/2,Screen.width*prefMenuWidth,Screen.height*prefMenuHeight),preferenceSkin.box);
+		//GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+			/*GUILayout.BeginVertical();
+				GUILayout.Label("Which of the two games you just played did you find the most challenging?\nPlease choose from the options below:");
+				forcedChoiceChallengeSelected = GUILayout.SelectionGrid(forcedChoiceChallengeSelected,forcedChoiceChallengeOptions,1);
+			GUILayout.EndVertical();*/
+			GUILayout.BeginHorizontal();
+				GUILayout.FlexibleSpace();
+				GUILayout.BeginVertical();
+					GUILayout.Label("Which of the two games you just played did you find the most stressful?\nPlease choose from the options below. Click an option to choose it.");
+					//forcedChoiceStressSelected = GUILayout.SelectionGrid(forcedChoiceStressSelected,forcedChoiceStressOptions,1);
+					GUILayout.BeginHorizontal();
+						first = GUILayout.Toggle(first,"The first game");
+						GUILayout.Label(playerImages[gl.expTrial.PCA]);
+					GUILayout.EndHorizontal();
+					GUILayout.BeginHorizontal();
+						second = GUILayout.Toggle(second,"The second game");
+						GUILayout.Label(playerImages[gl.expTrial.PCB]);
+					GUILayout.EndHorizontal();
+					equal = GUILayout.Toggle(equal,"They were equally stressful");
+					none = GUILayout.Toggle(none,"None of them were stressful");
+				GUILayout.EndVertical();
+				GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
+			GUILayout.Space(10);
+			
+			GUILayout.BeginHorizontal();
+			GUILayout.FlexibleSpace();
+			int numSelected = 0;
+			if(first == true)
+			{
+				//latestSelection = 0;
+				numSelected++;
+			}
+			if(second == true)
+			{
+					//latestSelection = 1;
+					numSelected++;
+			}
+			if(equal == true)
+			{
+					//latestSelection = 2;
+					numSelected++;
+			}
+			if(none == true)
+			{
+					//latestSelection = 3;
+					numSelected++;
+			}
+			
+			if( numSelected > 1 || numSelected < 1)
+			{
+			
+				if(first == true && latestSelection == 0)
+					first = false;
+				else if(first == true)
+					latestSelection = 0;
+					
+				if(second == true && latestSelection == 1)
+					second = false;
+				else if(second == true)
+					latestSelection = 1;
+			
+				if(equal == true && latestSelection == 2)
+					equal = false;
+				else if(equal == true)
+					latestSelection = 2;
+			
+				if(none == true && latestSelection == 3)
+					none = false;
+				else if(none == true)
+					latestSelection = 3;	
+			
+				if(GUILayout.Button("Please pick exactly one\nClick again to de-select"))
+				{
+					
+				}
+			} else
+			{
+				if(GUILayout.Button("Go to next game"))				
+				{
+					EndPreferenceSurvey();
+					gl.StartNewGame();
+				}
+			}
+			GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
+		GUILayout.EndArea();
 	}
+	int latestSelection;
 	
 	public void StartPreferenceSurvey()
 	{
@@ -141,8 +236,17 @@ public class SurveyLogic : MonoBehaviour {
 		currentPreferenceSurveyData.MarkStart();
 	}
 	
+	
 	public void EndPreferenceSurvey()
 	{
+		if(first == true)
+			currentPreferenceSurveyData.SetMostStressfullGame("first");
+		if(second == true)
+			currentPreferenceSurveyData.SetMostStressfullGame("second");
+		if(equal == true)
+			currentPreferenceSurveyData.SetMostStressfullGame("equal");
+		if(none == true)
+			currentPreferenceSurveyData.SetMostStressfullGame("none");
 		currentPreferenceSurveyData.MarkEnd();
 	}
 	
@@ -216,7 +320,7 @@ public class PreferenceSurveyData
 	int setNumber;
 	float preferenceSurveyStart;
 	float preferenceSurveyEnd;
-	int mostStressFullGame;
+	string mostStressFullGame;
 	int numberOfSelectionsMade = 0;
 	
 	public PreferenceSurveyData(ExperimentalTrial trial, ExpSet exSet)
@@ -226,9 +330,9 @@ public class PreferenceSurveyData
 		setNumber = expTrial.totalSets.IndexOf(exSet);
 	}
 	
-	public void SetMostStressfullGame(int gameNum)
+	public void SetMostStressfullGame(string gameOption)
 	{
-		mostStressFullGame = gameNum;
+		mostStressFullGame = gameOption;
 		numberOfSelectionsMade++;
 	}
 	

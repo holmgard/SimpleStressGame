@@ -63,7 +63,7 @@ public class GameGUI : MonoBehaviour {
 				GUILayout.Box(gl.empConnection.empState.ToString());
 				switch(gl.empConnection.empState)
 				{
-					case EmpaticaConnection.EmpaticaState.fresh:
+					case EmpaticaState.fresh:
 						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_greyish")))
 						{
 							gl.empConnection.ConnectEmpatica();
@@ -75,7 +75,7 @@ public class GameGUI : MonoBehaviour {
 							gl.SetGameState(GameState.initialSurvey);
 						}
 						break;
-					case EmpaticaConnection.EmpaticaState.opening:
+					case EmpaticaState.opening:
 						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_yellow")))
 						{
 							//gl.empConnection.ConnectEmpatica();
@@ -87,7 +87,7 @@ public class GameGUI : MonoBehaviour {
 							gl.SetGameState(GameState.initialSurvey);
 						}
 						break;
-					case EmpaticaConnection.EmpaticaState.receiving:
+					case EmpaticaState.receiving:
 						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_green")))
 						{
 							//gl.empConnection.ConnectEmpatica();
@@ -98,7 +98,7 @@ public class GameGUI : MonoBehaviour {
 							gl.SetGameState(GameState.initialSurvey);
 						}
 						break;
-					case EmpaticaConnection.EmpaticaState.error:
+					case EmpaticaState.error:
 						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_red")))
 						{
 							//gl.empConnection.ConnectEmpatica();
@@ -151,13 +151,13 @@ public class GameGUI : MonoBehaviour {
 				GUILayout.EndHorizontal();
 				if(GUILayout.Button("Stop reading"))
 				{
-					gl.empConnection.StopEmpatica();
+					gl.empConnection.DisconnectEmpatica();
 				}
 				if(GUILayout.Button("SaveData"))
 				{
 					gl.gameLogger.SaveData();
 					gl.surveyLogic.SaveData();
-					gl.empConnection.StartSave();
+					gl.empConnection.SaveData();
 					gl.didManuallySave = true;
 				}
 			GUILayout.EndVertical();

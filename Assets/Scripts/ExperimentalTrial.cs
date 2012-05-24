@@ -7,6 +7,8 @@ public class ExperimentalTrial : MonoBehaviour {
 	public Texture2D[] visualStimuli;
 	public AudioClip[] auditiveStimuli;
 	public Material[] playerColors;
+	public int PCA;
+	public int PCB;
 	
 	public List<Stimulus> stimuli;
 	
@@ -114,8 +116,8 @@ public class ExperimentalTrial : MonoBehaviour {
 		
 		foreach(Stimulus curStim in stimuli)
 		{
-			int PCA = playerColor;
-			int PCB = Mathf.Abs(playerColor-1);
+			PCA = playerColor;
+			PCB = Mathf.Abs(playerColor-1);
 			comparisonSets.Add(new ExpSet(new ExpSession(curStim,false,playerColors[PCA]),new ExpSession(curStim,true,playerColors[PCB])));
 			Debug.Log("Comp. Set Player Color: " + playerColor);
 			playerColor = Random.Range(0,2);
