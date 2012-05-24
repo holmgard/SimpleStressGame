@@ -5,6 +5,7 @@ public class GameGUI : MonoBehaviour {
 	
 	public GameLogic gl;
 	public GUISkin skin;
+	public GUISkin proceedSkin;
 	
 	// Use this for initialization
 	void Start ()
@@ -19,6 +20,7 @@ public class GameGUI : MonoBehaviour {
 	
 	void OnGUI()
 	{
+		GUI.skin = skin;
 		switch(gl.gameState)
 		{
 		case GameState.menu:
@@ -121,20 +123,27 @@ public class GameGUI : MonoBehaviour {
 	
 	void WaitingGUI()
 	{
-		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
-			GUILayout.BeginVertical();
-				if(GUILayout.Button("Proceed to next round"))
-				{
-					gl.empConnection.MarkEvent("SessionStart");
-					gl.StartNewGame();
-				}
-			GUILayout.EndVertical();
+		GUI.skin = proceedSkin;
+		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.3F*0.5F,Screen.height*0.5F-Screen.height*0.3F*0.5F,Screen.width*0.3F,Screen.height*0.3F));
+			GUILayout.BeginHorizontal();
+				GUILayout.BeginVertical();
+					if(GUILayout.Button("Proceed to next round"))
+					{
+						gl.empConnection.MarkEvent("SessionStart");
+						gl.StartNewGame();
+					}
+				GUILayout.EndVertical();
+			GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
 	
+	public float gameOverMenuWidth = 0.3155F;
+	public float gameOverMenuHeight = 0.3F;
 	void GameOverGUI()
 	{
-		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+		GUI.skin = skin;
+		//GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+		GUILayout.BeginArea(new Rect(Screen.width*(1-gameOverMenuWidth)/2,Screen.height*(1-gameOverMenuHeight)/2,Screen.width*gameOverMenuWidth,Screen.height*gameOverMenuHeight),skin.box);
 			GUILayout.BeginVertical();
 				GUILayout.BeginHorizontal();	
 					GUILayout.Label("Empatica state:");

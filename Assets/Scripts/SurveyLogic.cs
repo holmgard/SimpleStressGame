@@ -12,6 +12,8 @@ public class SurveyLogic : MonoBehaviour {
 	PreferenceSurveyData currentPreferenceSurveyData;
 	public Texture2D tutorialImage;
 	public GUISkin surveySkin;
+	public GUISkin preferenceSkin;
+	public Texture2D[] playerImages;
 	
 	// Use this for initialization
 	void Start ()
@@ -102,18 +104,28 @@ public class SurveyLogic : MonoBehaviour {
 	int forcedChoiceStressSelected = 0;
 	string[] forcedChoiceStressOptions = {"The first game was most stressful","The second game was most stressful","They were equally stressful","None of them were stressful"};	
 	
+	public float prefMenuWidth = 0.3155F;
+	public float prefMenuHeight = 0.3F;
+	//public float surveyItemVerticalSpacing = 5.0f;
+	
 	void ForcedChoiceFourAltSurvey()
-	{
-		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
+	{	
+		GUI.skin = preferenceSkin;
+		GUILayout.BeginArea(new Rect(Screen.width*(1-prefMenuWidth)/2,Screen.height*(1-prefMenuHeight)/2,Screen.width*prefMenuWidth,Screen.height*prefMenuHeight),surveySkin.box);
+		//GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
 			/*GUILayout.BeginVertical();
 				GUILayout.Label("Which of the two games you just played did you find the most challenging?\nPlease choose from the options below:");
 				forcedChoiceChallengeSelected = GUILayout.SelectionGrid(forcedChoiceChallengeSelected,forcedChoiceChallengeOptions,1);
 			GUILayout.EndVertical();*/
-			GUILayout.BeginVertical();
-				GUILayout.Label("Which of the two games you just played did you find the most stressful?\nPlease choose from the options below. Click an option to choose it.");
-				forcedChoiceStressSelected = GUILayout.SelectionGrid(forcedChoiceStressSelected,forcedChoiceStressOptions,1);
-			GUILayout.EndVertical();
-			GUILayout.Space(50);
+			GUILayout.BeginHorizontal();
+				GUILayout.FlexibleSpace();
+				GUILayout.BeginVertical();
+					GUILayout.Label("Which of the two games you just played did you find the most stressful?\nPlease choose from the options below. Click an option to choose it.");
+					forcedChoiceStressSelected = GUILayout.SelectionGrid(forcedChoiceStressSelected,forcedChoiceStressOptions,1);
+				GUILayout.EndVertical();
+				GUILayout.FlexibleSpace();
+			GUILayout.EndHorizontal();
+			GUILayout.Space(10);
 			if(GUILayout.Button("Go to next game"))
 			{
 				EndPreferenceSurvey();
