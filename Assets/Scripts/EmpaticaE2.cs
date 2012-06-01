@@ -34,6 +34,8 @@ public class EmpaticaE2 : MonoBehaviour {
 	private NetworkStream stream;
 	private Encoding encoding;
 	
+	public bool reallySuperVerboseLogging = false;
+	
 	public EmpaticaState empState = EmpaticaState.fresh;
 	
 	private Thread receiveThread;
@@ -104,9 +106,12 @@ public class EmpaticaE2 : MonoBehaviour {
 				break;
 			case EmpaticaState.receiving:
 				dataStorage.AddRange(ReadSamples());
-				if(dataStorage.Count % 100 == 0)
+				if(reallySuperVerboseLogging)
 				{
-					print ("Collected samples: " + dataStorage.Count.ToString());
+					if(dataStorage.Count % 100 == 0)
+					{
+						print ("Collected samples: " + dataStorage.Count.ToString());
+					}
 				}
 				break;
 			case EmpaticaState.stopping:
@@ -278,7 +283,10 @@ public class EmpaticaE2 : MonoBehaviour {
 			
 			int samplesLengthInBytes = dataLength*4 + 2;
 			
-			print (GetSampleType(channelID).ToString() + " " + dataLength.ToString());
+			if(reallySuperVerboseLogging)
+			{
+				print (GetSampleType(channelID).ToString() + " " + dataLength.ToString());
+			}
 			
 			for(int i = 0; i < dataLength; i++)
 			{
@@ -294,7 +302,10 @@ public class EmpaticaE2 : MonoBehaviour {
 				
 				float sampleValue = (float)BitConverter.ToSingle(reversedBytes, 0);				
 				
-				print(GetSampleType(channelID).ToString() + " " + sampleValue.ToString());
+				if(reallySuperVerboseLogging)
+				{
+					print(GetSampleType(channelID).ToString() + " " + sampleValue.ToString());
+				}
 				
 				EmpaticaSample sample = new EmpaticaSample(DateTime.Now, GetSampleType(channelID), sampleValue);
 				result.Add(sample);
@@ -396,7 +407,7 @@ public class EmpaticaE2 : MonoBehaviour {
 		
 	public void ThreadSaveData() //TODO: Maybe this could be rewritten to use LINQ and be really cool?
 	{
-		print ("Starting save...");
+		print ("Starting biodata save...");
 		
 		ArrayList bvp = new ArrayList();
 		ArrayList gsrt = new ArrayList();
@@ -451,7 +462,7 @@ public class EmpaticaE2 : MonoBehaviour {
 		
 		foreach(ArrayList list in lists)
 		{
-			print ("Saving...");
+			print ("Saving biodata...");
 			if(list.Count > 0)
 			{
 				string fileName = "";
@@ -514,7 +525,7 @@ public class EmpaticaEvent
 		eventDescription = e;
 	}
 	
-	public string ToString()
+	public override string ToString()
 	{
 		return string.Format("{0:yyy-mm-dd_hh:mm:ss.fff}\t{1}",time,eventDescription);
 	}

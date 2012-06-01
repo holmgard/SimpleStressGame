@@ -16,6 +16,9 @@ public class ExperimentalTrial : MonoBehaviour {
 	public List<ExpSet> randomSets;
 	public List<ExpSet> totalSets;
 	
+	public ExpSet currentExpSet;
+	public ExpSession currentExpSession;
+	
 	public ExpSet mostRecentSet;
 	public ExpSession mostRecentSession;
 	
@@ -31,10 +34,38 @@ public class ExperimentalTrial : MonoBehaviour {
 		totalSets = new List<ExpSet>();
 		totalSets.AddRange(comparisonSets);
 		totalSets.AddRange(randomSets);
+		
+		currentExpSet = totalSets[0];
+		currentExpSession = totalSets[0].sessionA;
+		
+		//TODO: Outcomment these lines
 		mostRecentSet = totalSets[0];
 		mostRecentSession = totalSets[0].sessionA;
+		
+		
 		Debug.Log("Generated a total of " + totalSets.Count.ToString() + " sets");
 		Debug.Log(GenerateSetReport());
+		SaveSetReport(GenerateSetReport());
+	}
+	
+	void SaveSetReport(string report)
+	{
+		print ("Saving experimental setup report...");
+		string fileName = "";
+				fileName += System.DateTime.Now.Day.ToString();
+				fileName += System.DateTime.Now.Month.ToString();
+				fileName += System.DateTime.Now.Year.ToString();
+				fileName += "_";
+				fileName += System.DateTime.Now.Hour.ToString();
+				fileName += System.DateTime.Now.Minute.ToString();
+				fileName += System.DateTime.Now.Second.ToString();
+				fileName += "_ExperimentalSetupReport";
+				fileName += ".dat";
+
+		//print ("Writing gamelog file...");
+		System.IO.File.WriteAllText(fileName,report);
+		
+		print ("Experimental setup report saving done");
 	}
 	
 	string GenerateSetReport()
@@ -46,6 +77,8 @@ public class ExperimentalTrial : MonoBehaviour {
 		{
 			result += "Set number: " + totalSets.IndexOf(expSet) + "\n";
 			result += "Stimulus A type: " + expSet.sessionA.stimulus.stimType.ToString() + "\n";
+			result += "Stimulus A noise: " + expSet.sessionA.noise.ToString() + "\n";
+			result += "Stimulus A color: " + expSet.sessionA.playerColor.ToString() + "\n";
 			if(expSet.sessionA.stimulus.stimType == Stimulus.StimulusTypes.auditive)
 			{
 				result += "Stimulus A name: " + expSet.sessionA.stimulus.audio.name + "\n";
@@ -54,13 +87,16 @@ public class ExperimentalTrial : MonoBehaviour {
 			{
 				result += "Stimulus A name: " + expSet.sessionA.stimulus.image.name + "\n";
 			}
+			result += "Stimulus B type: " + expSet.sessionB.stimulus.stimType.ToString() + "\n";
+			result += "Stimulus B noise: " + expSet.sessionB.noise.ToString() + "\n";
+			result += "Stimulus B color: " + expSet.sessionB.playerColor.ToString() + "\n";
 			if(expSet.sessionB.stimulus.stimType == Stimulus.StimulusTypes.auditive)
 			{
-				result += "Stimulus A name: " + expSet.sessionB.stimulus.audio.name + "\n";
+				result += "Stimulus B name: " + expSet.sessionB.stimulus.audio.name + "\n";
 			}
 			if(expSet.sessionB.stimulus.stimType == Stimulus.StimulusTypes.visual)
 			{
-				result += "Stimulus A name: " + expSet.sessionB.stimulus.image.name + "\n";
+				result += "Stimulus B name: " + expSet.sessionB.stimulus.image.name + "\n";
 			}
 			result += "-----\n";
 		}
@@ -74,24 +110,38 @@ public class ExperimentalTrial : MonoBehaviour {
 			lengthOfSets = totalSets.Count;
 	}
 	
-	public ExpSet GetNextExpSet()
+	/*public ExpSet GetNextExpSet()
 	{
-		ExpSet temp = mostRecentSet;
-		mostRecentSet = totalSets[(totalSets.IndexOf(mostRecentSet)+1)];
-		return mostRecentSet;
+		ExpSet temp = currentExpSet;
+		currentExpSet = totalSets[ ( totalSets.IndexOf(currentExpSet) + 1 ) ];
+		return temp;
+	}*/
+	
+	public void MoveToNextSet(){
+		int curIdx = totalSets.IndexOf(currentExpSet);
+		int nextIdx = curIdx + 1;
+		currentExpSet = totalSets[nextIdx];
+		currentExpSession = currentExpSet.sessionA;
 	}
 	
-	public ExpSession GetNextExpSession()
-	{
-		if(mostRecentSession == mostRecentSet.sessionB)
+	public void MoveToNextSession(){
+		if(currentExpSession == currentExpSet.sessionA)
 		{
-			mostRecentSession = GetNextExpSet().sessionA;
-		} else {
-			mostRecentSession = mostRecentSet.sessionB;
+			currentExpSession = currentExpSet.sessionB;
 		}
-		return mostRecentSession;
-		
 	}
+	
+	/*public ExpSession GetNextExpSession()
+	{
+		if(currentExpSession == currentExpSet.sessionB)
+		{
+			currentExpSession = GetNextExpSet().sessionA;
+			return currentExpSession;
+		} else {
+			currentExpSession = currentExpSet.sessionB;
+			return currentExpSession;
+		}
+	}*/
 	
 	void SetupStimuli()
 	{
@@ -112,31 +162,34 @@ public class ExperimentalTrial : MonoBehaviour {
 		Debug.Log("SetupComparisonSets");
 		comparisonSets = new List<ExpSet>();
 		
-		int playerColor = Random.Range(0,2);
+		int playerColor;
 		
 		foreach(Stimulus curStim in stimuli)
 		{
-			PCA = playerColor;
-			PCB = Mathf.Abs(playerColor-1);
-			comparisonSets.Add(new ExpSet(new ExpSession(curStim,false,playerColors[PCA]),new ExpSession(curStim,true,playerColors[PCB])));
-			Debug.Log("Comp. Set Player Color: " + playerColor);
 			playerColor = Random.Range(0,2);
+			PCA = playerColor;
+			if(PCA == 0)
+				PCB = 1;
+			if(PCA == 1)
+				PCB = 0;
+			comparisonSets.Add(new ExpSet(new ExpSession(curStim,false,playerColors[PCA],PCA),new ExpSession(curStim,true,playerColors[PCB],PCB)));
 		}
 	}
 	
 	void SetupRandomSets()
 	{
 		Debug.Log("SetupRandomSets");
+		
 		//Prepare list for sets
 		randomSets = new List<ExpSet>();
-		Debug.Log(randomSets.Count);
-		Debug.Log(stimuli.Count);
-		Debug.Log(stimuli.Count*( stimuli.Count - 1 ));
+		//Debug.Log(randomSets.Count);
+		//Debug.Log(stimuli.Count);
+		//Debug.Log(stimuli.Count*( stimuli.Count - 1 ));
 		
 		int iteration = 0;
 		while( randomSets.Count < ( stimuli.Count*( stimuli.Count - 1 ) ) * 2 )
 		{
-			Debug.Log("Loop");
+			//Debug.Log("Loop");
 			Debug.Log("Sets:" + randomSets.Count.ToString());
 			
 			iteration++;
@@ -154,12 +207,16 @@ public class ExperimentalTrial : MonoBehaviour {
 			}
 			
 			int playerColorA = Random.Range(0,playerColors.Length);
-			Debug.Log("ColorA: " + playerColorA);
-			int playerColorB = Mathf.Abs(playerColorA-1);
-			Debug.Log("ColorB: " + playerColorB);
+			Debug.Log("ColorA: " + playerColorA.ToString());
+			int playerColorB = 9;
+			if(playerColorA == 0)
+				playerColorB = 1;
+			if(playerColorA == 1)
+				playerColorB = 0;
+			Debug.Log("ColorB: " + playerColorB.ToString());
 			
 			//Make an experimental set and check that it is not a clone of one already in the list of sets
-			ExpSet candidate = new ExpSet(new ExpSession(stimCand_a,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorA]),new ExpSession(stimCand_b,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorB]));
+			ExpSet candidate = new ExpSet(new ExpSession(stimCand_a,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorA],playerColorA),new ExpSession(stimCand_b,System.Convert.ToBoolean(Random.Range(0,2)),playerColors[playerColorB],playerColorB));
 			bool candidateIsDouble = false;
 			foreach(ExpSet curSet in randomSets)
 			{
@@ -231,14 +288,16 @@ public class ExpSession
 	public int points = 0;	
 	public bool noise;
 	public Material playerColor;
+	public int colorIndex;
 	
 	public Stimulus stimulus;
 	
-	public ExpSession(Stimulus stim, bool noi, Material playCol)
+	public ExpSession(Stimulus stim, bool noi, Material playCol, int colIdx)
 	{
 		stimulus = stim;
 		noise = noi;
 		playerColor = playCol;
+		colorIndex = colIdx;
 	}
 }
 

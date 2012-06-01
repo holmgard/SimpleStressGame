@@ -15,7 +15,7 @@ public class GameLogger : MonoBehaviour {
 	
 	public bool logging = false;
 	
-	private Thread saveThread;
+	private Thread saveGameLogThread;
 	
 	// Use this for initialization
 	void Start ()
@@ -37,10 +37,10 @@ public class GameLogger : MonoBehaviour {
 		
 		if(gameLogic.gameState == GameState.playingSesA || gameLogic.gameState == GameState.playingSesB)
 		{
-			Debug.Log("First if");
+			//Debug.Log("First if");
 			if(target != null && threats != null && player != null)
 			{
-				Debug.Log("Second if");
+				//Debug.Log("Second if");
 				Vector3 targetPosition = target.transform.position;
 				Vector3[] threatPositions = new Vector3[threats.Length];
 				Vector3 playerPosition = player.transform.position;
@@ -50,36 +50,47 @@ public class GameLogger : MonoBehaviour {
 					threatPositions[i] = threats[i].transform.position;
 				}
 				
-				Debug.Log("GameLogger gamelogging!");
+				//Debug.Log("GameLogger gamelogging!");
 				
-				gameLog.Add(new GameLogEntry(DateTime.Now, gameLogic.gamesPlayed, gameLogic.gameState, threatPositions, targetPosition, playerPosition, gameLogic.targetsCaugth, gameLogic.threatsHit));
+				gameLog.Add(new GameLogEntry(DateTime.Now, gameLogic.gamesPlayed, gameLogic.gameState, threatPositions, targetPosition, playerPosition, gameLogic.targetsCaugth, gameLogic.threatsHit, Input.mousePosition));
+				//Debug.Log(gameLog[gameLog.Count-1].ToString());
 			}
 		}
 	}
 	
 	public void SaveData()
 	{
-		saveThread = new Thread(new ThreadStart(ThreadSaveData));
-		saveThread.IsBackground = true;
-		saveThread.Start();
+		saveGameLogThread = new Thread(new ThreadStart(ThreadSaveGameLog));
+		saveGameLogThread.IsBackground = true;
+		saveGameLogThread.Start();
 	}
 	
-	public void ThreadSaveData() //TODO: Maybe this could be rewritten to use LINQ and be really cool?
+	public void ThreadSaveGameLog() //TODO: Maybe this could be rewritten to use LINQ and be really cool?
 	{
+		print ("Saving gamelog...");
 		string fileName = "";
-		fileName += DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + "_" + DateTime.Now.Second.ToString() + "gameLog.dat";
+				fileName += DateTime.Now.Day.ToString();
+				fileName += DateTime.Now.Month.ToString();
+				fileName += DateTime.Now.Year.ToString();
+				fileName += "_";
+				fileName += DateTime.Now.Hour.ToString();
+				fileName += DateTime.Now.Minute.ToString();
+				fileName += DateTime.Now.Second.ToString();
+				fileName += "_GameLog";
+				fileName += ".dat";
 		
 		string gameLogData = "";
 		foreach(GameLogEntry gameLogEntry in gameLog)
 		{
-			gameLogData += gameLogData += gameLogEntry.ToString();
+			//print ("Building gamelog output...");
+			gameLogData += gameLogEntry.ToString();
 			gameLogData += "\n";
 		}
-		
+		//print ("Writing gamelog file...");
 		System.IO.File.WriteAllText(fileName,gameLogData);
 		
 		print ("GameLog saving done");
 		
-		saveThread.Abort();
+		saveGameLogThread.Abort();
 	}
 }

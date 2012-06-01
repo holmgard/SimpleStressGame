@@ -9,6 +9,7 @@ public enum GameState{
 	waiting,
 	playingSesB,
 	preferenceSurvey,
+	finalPreferenceSurvey,
 	gameover
 }
 
@@ -72,6 +73,8 @@ public class GameLogic : MonoBehaviour {
 		gameStartTime = Time.time;
 		stimulusDelivered = false;
 		stimulusRemoved = false;
+		targetsCaugth = 0;
+		threatsHit = 0;
 		
 		if(threatCollisionSource.isPlaying)
 		{
@@ -89,7 +92,22 @@ public class GameLogic : MonoBehaviour {
 		currentThreats.Add((GameObject)Instantiate(threatPrefab,startPoints[pos2],Quaternion.identity));
 		numberOfThreatsOnScene = currentThreats.Count;
 		
-		gameConfig.ConfigureSession(expTrial.GetNextExpSession());
+		if(gamesPlayed == 0)
+		{
+			gameConfig.ConfigureSession(expTrial.currentExpSession);
+		}
+		else if(gamesPlayed > 0)
+		{
+			if(expTrial.currentExpSession == expTrial.currentExpSet.sessionA)
+			{
+				expTrial.MoveToNextSession();
+			} else if (expTrial.currentExpSession == expTrial.currentExpSet.sessionB)
+			{
+				expTrial.MoveToNextSet();
+			}
+			gameConfig.ConfigureSession(expTrial.currentExpSession);
+		}
+		
 		if(gameState == GameState.initialSurvey || gameState == GameState.preferenceSurvey)
 			this.SetGameState(GameState.playingSesA);
 		else if (gameState == GameState.waiting)
@@ -105,7 +123,7 @@ public class GameLogic : MonoBehaviour {
 	public void GameOver()
 	{
 		gamesPlayed++;
-		Debug.Log("Games Played: " + gamesPlayed + "Games remaining: " + (expTrial.totalSets.Count-gamesPlayed).ToString());
+		Debug.Log("Session Played: " + gamesPlayed + " Games remaining: " + (expTrial.totalSets.Count*2-gamesPlayed).ToString());
 		
 		Object[] targets = FindObjectsOfType(typeof(Target));
 		Object[] threats = FindObjectsOfType(typeof(Threat));
@@ -120,8 +138,8 @@ public class GameLogic : MonoBehaviour {
 			Destroy(obj.gameObject);	
 		}
 		
-		if(gamesPlayed >= expTrial.totalSets.Count)
-			this.SetGameState(GameState.gameover);
+		if(gamesPlayed >= expTrial.totalSets.Count*2)
+			this.SetGameState(GameState.finalPreferenceSurvey);
 		if(gameState == GameState.playingSesA)
 		{
 			this.SetGameState(GameState.waiting);
@@ -148,8 +166,11 @@ public class GameLogic : MonoBehaviour {
 		}
 		
 		//Debug.Log(Vector3.Distance(player.gameObject.transform.position,spawnPointThreats).ToString());
-		currentThreats.Add((GameObject) Instantiate(threatPrefab,startPoints[Random.Range(0,3)],Quaternion.identity) as GameObject);
-		numberOfThreatsOnScene = currentThreats.Count;
+		if(numberOfThreatsOnScene < maxNumberOfThreats)
+		{
+			currentThreats.Add((GameObject) Instantiate(threatPrefab,startPoints[Random.Range(0,3)],Quaternion.identity) as GameObject);
+			numberOfThreatsOnScene = currentThreats.Count;
+		}
 	}
 	
 	// Use this for initialization
@@ -251,18 +272,17 @@ public class GameLogic : MonoBehaviour {
 				
 			if(currentStimulus.stimType == Stimulus.StimulusTypes.auditive)
 			{
-				//TODO - put mark in data set
 				Debug.Log("Deploying auditive stimulus");
+				empConnection.MarkEvent(currentStimulus.audio.name);
 				threatCollisionSource.PlayOneShot(currentStimulus.audio);
 				stimulusRemoved = true;
 			}
 			if(currentStimulus.stimType == Stimulus.StimulusTypes.visual)
 			{
-				//TODO - put mark in data set
 				Debug.Log("Deploying visual stimulus");
+				empConnection.MarkEvent(currentStimulus.image.name);
 				stimulusDeliveryPlane.renderer.material.mainTexture = currentStimulus.image;
 				stimulusDeliveryPlane.active = true;
-				//Change background
 			}
 			
 			stimulusDelivered = true;

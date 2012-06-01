@@ -42,6 +42,9 @@ public class GameGUI : MonoBehaviour {
 		case GameState.preferenceSurvey:
 			Screen.showCursor = true;
 		break;
+		case GameState.finalPreferenceSurvey:
+			Screen.showCursor = true;
+			break;
 		case GameState.gameover:
 			Screen.showCursor = true;
 			GameOverGUI();
@@ -57,13 +60,16 @@ public class GameGUI : MonoBehaviour {
 	void MenuGUI()
 	{
 		GUI.skin = skin;
-		GUILayout.BeginArea(new Rect(Screen.width*(1-menuWidth)*2,Screen.height*(1-menuHeight)*2,Screen.width*menuWidth,Screen.height*menuHeight));
+		GUI.Box(new Rect(0f,0f,1024f,768f),"",skin.GetStyle("BoxBackground"));
+		GUILayout.BeginArea(new Rect(Screen.width*(1-menuWidth)*2,Screen.height*(1-menuHeight)*2,Screen.width*menuWidth,Screen.height*menuHeight),skin.box);
 			GUILayout.BeginVertical();
-				GUILayout.Label("Empatica state:");
-				GUILayout.Box(gl.empConnection.empState.ToString());
+				GUILayout.Label("Empatica state:",GUILayout.Width(200f));
+				GUILayout.Label(gl.empConnection.empState.ToString(),GUILayout.Width(200f));
 				switch(gl.empConnection.empState)
 				{
 					case EmpaticaState.fresh:
+						GUILayout.Label("Enter Empatica port: ");
+						gl.empConnection.serverPort = System.Convert.ToInt32(GUILayout.TextField(gl.empConnection.serverPort.ToString(),GUILayout.Width(50f)));
 						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_greyish")))
 						{
 							gl.empConnection.ConnectEmpatica();
@@ -76,22 +82,23 @@ public class GameGUI : MonoBehaviour {
 						}
 						break;
 					case EmpaticaState.opening:
-						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_yellow")))
+						if(GUILayout.Button("Connecting empatica",skin.GetStyle("button_yellow")))
 						{
 							//gl.empConnection.ConnectEmpatica();
 						}
 						GUILayout.Space(20f);
-						if(GUILayout.Button("Start the experiment",skin.GetStyle("button_yellow")))
+						if(GUILayout.Button("Wating for connection...",skin.GetStyle("button_yellow")))
 						{
 							gl.empConnection.MarkEvent("StartExperiment");
 							gl.SetGameState(GameState.initialSurvey);
 						}
 						break;
 					case EmpaticaState.receiving:
-						if(GUILayout.Button("Connect Empatica",skin.GetStyle("button_green")))
+						if(GUILayout.Button("Empatica is connected",skin.GetStyle("button_green")))
 						{
 							//gl.empConnection.ConnectEmpatica();
 						}
+						GUILayout.Space(20f);
 						if(GUILayout.Button("Start the experiment",skin.GetStyle("button_green")))
 						{
 							gl.empConnection.MarkEvent("StartExperiment");
@@ -118,11 +125,12 @@ public class GameGUI : MonoBehaviour {
 	
 	void PlayingGUI()
 	{
-		GUI.Box(new Rect(10,10,100,20),"Points: " + gl.targetsCaugth.ToString());
+		GUI.Box(new Rect(10,10,50,20),"Points: " + (gl.targetsCaugth - gl.threatsHit).ToString());
 	}
 	
 	void WaitingGUI()
 	{
+		GUI.Box(new Rect(0f,0f,1024f,768f),"",skin.GetStyle("BoxBackground"));
 		GUI.skin = proceedSkin;
 		GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.3F*0.5F,Screen.height*0.5F-Screen.height*0.3F*0.5F,Screen.width*0.3F,Screen.height*0.3F));
 			GUILayout.BeginHorizontal();
@@ -141,14 +149,13 @@ public class GameGUI : MonoBehaviour {
 	public float gameOverMenuHeight = 0.3F;
 	void GameOverGUI()
 	{
+		GUI.Box(new Rect(0f,0f,1024f,768f),"",skin.GetStyle("BoxBackground"));
 		GUI.skin = skin;
 		//GUILayout.BeginArea(new Rect(Screen.width*0.5F-Screen.width*0.8F*0.5F,Screen.height*0.5F-Screen.height*0.8F*0.5F,Screen.width*0.8F,Screen.height*0.8F));
 		GUILayout.BeginArea(new Rect(Screen.width*(1-gameOverMenuWidth)/2,Screen.height*(1-gameOverMenuHeight)/2,Screen.width*gameOverMenuWidth,Screen.height*gameOverMenuHeight),skin.box);
 			GUILayout.BeginVertical();
-				GUILayout.BeginHorizontal();	
-					GUILayout.Label("Empatica state:");
-					GUILayout.Box(gl.empConnection.empState.ToString());
-				GUILayout.EndHorizontal();
+				GUILayout.Label("Empatica state:");
+				GUILayout.Label(gl.empConnection.empState.ToString());
 				if(GUILayout.Button("Stop reading"))
 				{
 					gl.empConnection.DisconnectEmpatica();

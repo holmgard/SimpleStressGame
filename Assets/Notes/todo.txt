@@ -1,5 +1,2 @@
-Color switching is buggy, doesn't always work
-
-Saving is slightly broken
-
-Replace EmpaticaConnection with EmpaticaE2
+Preference screen missing after last session
+Colors are still buggy
